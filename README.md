@@ -1,4 +1,4 @@
-# LLMPipeVisualizer
+# LLMScoreVisualizer
 A graphical user interface for plotting scores sourced from DNA language models using customtkinter. This project is for easily visualizing DNA LLM results.
 
 ## Quickstart
