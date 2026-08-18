@@ -167,6 +167,32 @@ class MSICProfile(PlotCreation):
             text_color=Theme.GENERAL_LABEL
         )
         self.reverse_ann_checkbox.grid(row=0, column=1, padx=5)
+        
+        self.plot_type_frame = ctk.CTkFrame(self.button_frame1, fg_color="transparent")
+        self.plot_type_frame.pack(side=ctk.RIGHT, fill="y", padx=(0, 25), pady=5)
+        
+        self.plot_type_label = ctk.CTkLabel(
+            self.plot_type_frame,
+            text="Plot Type",
+            font=("Roboto", 16),
+            text_color=Theme.GENERAL_LABEL
+        )
+        self.plot_type_label.pack()
+        
+        self.plot_type_selection = ctk.StringVar(self.plot_type_frame, "scatter plot")
+        self.plot_type_selection.trace_add("write", self._update_plot)
+        plot_type_options = ["scatter plot", "bar plot", "vertical line plot"]
+        self.plot_type_listbox = ctk.CTkComboBox(
+            self.plot_type_frame,
+            height=30, 
+            width=150,
+            state="readonly", 
+            variable=self.plot_type_selection, 
+            values=plot_type_options,
+            font=("Roboto", 13),
+            text_color=Theme.GENERAL_LABEL
+        )
+        self.plot_type_listbox.pack(pady=(20,0))
  
     def import_genbank_clicked(self):
         self.genbank_button.configure(state="disabled")

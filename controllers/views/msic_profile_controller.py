@@ -137,14 +137,31 @@ class MSICProfileController(PlotCreationController):
                 colors.append("#DCDCDC80")
                 
         fig, ax = plt.subplots(figsize=(13*self.main_ctrl.height_quo, 5.5*self.main_ctrl.height_quo))
-    
-        df.reset_index().plot.scatter(
-            x='index',
-            y='MSIC',
-            s=20/(len(df)/500),
-            c=colors,
-            ax=ax
-        )
+        
+        match self.view.plot_type_selection.get():
+            case "scatter plot":
+                ax.scatter(
+                    x=df.index,
+                    y=df["MSIC"],
+                    color=colors,
+                    s=20/(len(df)/500)
+                )
+            case "bar plot":
+                ax.bar(
+                    x=df.index,
+                    height=df['MSIC'],
+                    color=colors,
+                    width=1.0
+                ) 
+            case "vertical line plot":
+                ax.vlines(
+                    x=df.index,
+                    ymin=0,
+                    ymax=df["MSIC"],
+                    colors=colors,
+                    linewidth=1.0
+                )
+
         ax.set_ylim(-1, 1)
 
         df_sliced.reset_index().plot.line(
