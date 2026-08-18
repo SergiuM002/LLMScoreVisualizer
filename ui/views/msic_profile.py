@@ -22,6 +22,7 @@ class MSICProfile(PlotCreation):
         
         self.controller = controller
         self.custom_toolbar = None
+        self.update_timer = None
         
         controller.connect_view(self)
         
@@ -50,6 +51,7 @@ class MSICProfile(PlotCreation):
         self.rolling_step_label.pack(side=ctk.LEFT)
         
         self.step_var = ctk.StringVar(value="1")
+        self.step_var.trace_add("write", self._update_plot)
         self.rolling_step_entry = ctk.CTkEntry(
             self.rolling_entry_frame,
             textvariable=self.step_var,
@@ -68,6 +70,7 @@ class MSICProfile(PlotCreation):
         )
         
         self.window_var = ctk.StringVar(value="20")
+        self.window_var.trace_add("write", self._update_plot)
         self.rolling_window_entry = ctk.CTkEntry(
             self.rolling_entry_frame,
             textvariable=self.window_var,
@@ -169,7 +172,17 @@ class MSICProfile(PlotCreation):
         self.genbank_button.configure(state="disabled")
         GenbankSelection(GenbankSelectionController(self.controller.main_ctrl), self)
         
+    def _update_plot(self, *args):
+        if self.update_timer is not None:
+                    self.after_cancel(self.update_timer)
+                    self.update_timer = None
+                    
+        if self.update_timer is None:
+            self.update_timer = self.after(700, self.controller.preview_plot)  
+        
     def update_slider_from_entry(self, *args):
+        self._update_plot()
+          
         try:
             raw_val = self.width_var.get()
             if raw_val in ["", ".", "-"]: 
@@ -182,6 +195,8 @@ class MSICProfile(PlotCreation):
             pass
 
     def update_entry_from_slider(self, slider_val):
+        self._update_plot()
+                    
         entry_val = slider_val * 2
         
         self.width_var.set(f"{entry_val:.2f}")
