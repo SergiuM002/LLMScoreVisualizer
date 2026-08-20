@@ -20,7 +20,7 @@ class GenbankSelectionController:
         for key in self.view.master.controller.genbank_links.keys():
             self.add_genbank(key)
         
-    def load_csvs(self):
+    def load_imported_csvs(self):
         csv_files = self.view.master.controller.file_list
         for file_path in csv_files:
             self.view.pack_csv_button(Path(file_path).name, file_path, file_path)   
@@ -55,6 +55,7 @@ class GenbankSelectionController:
         for button in self.view.csv_buttons:
             button.set_enabled(False)
                 
+    # Makes the right csv buttons accessible according to prior selections
     def update_csvs_enabled(self, genbank_file_path):
         selected = self.selected_csv[genbank_file_path]
         for button in self.view.csv_buttons:
@@ -91,6 +92,7 @@ class GenbankSelectionController:
                 self.selected_csv[self.genbank_files[self.selected_genbank]].remove(button.file_path)
                 button.set_selected(False)
             
+    # Passes the selected binds to the plot creation controller
     def pass_genbank_binds(self):
         plot_controller = self.view.master.controller
         

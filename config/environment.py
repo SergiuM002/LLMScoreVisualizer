@@ -1,8 +1,13 @@
 import platform
+import sys
 import os
+from pathlib import Path
 
 OPERATING_SYSTEM = platform.system()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SESSIONS_DIR = os.path.join(os.path.join(BASE_DIR, "data"), "sessions.json")
-LASTLOGIN_DIR = os.path.join(os.path.join(BASE_DIR, "data"), "lastlogin.json")
+try:
+    BASE_DIR = Path(getattr(sys, '_MEIPASS', os.path.abspath(".")))
+except AttributeError:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+IMAGES_DIR = BASE_DIR / "images"

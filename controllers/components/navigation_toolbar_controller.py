@@ -65,4 +65,24 @@ class NavigationToolbarController:
         figure = self.view.master.controller.fig
         figure.savefig(output_path, dpi=200)
         
+    def reset_view(self):    
+        file_list = self.view.master.controller.file_list
+        csv_index = self.view.master.controller.csv_index
+        
+        default_data = self.view.master.controller.default_plot_config_data
+        
+        self.view.master.controller.ax.set_xlim(**default_data[file_list[csv_index]]["xlims"])
+        self.view.master.controller.ax.set_ylim(**default_data[file_list[csv_index]]["ylims"])
+        
+        self.view.master.canvas.draw_idle()
+        
+    def reset_config(self):
+        file_list = self.view.master.controller.file_list
+        csv_index = self.view.master.controller.csv_index
+                
+        default_data = self.view.master.controller.default_plot_config_data
+        
+        self.view.master.controller.fig.subplots_adjust(**default_data[file_list[csv_index]]["subplot_params"])
+        
+        self.view.master.canvas.draw_idle()
 

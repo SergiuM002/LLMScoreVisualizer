@@ -55,7 +55,7 @@ class NavigationToolbar(ctk.CTkFrame):
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
-            command=controller.toolbar.home,
+            command=controller.reset_view,
             tooltip_message="reset view"
         )
         self.reset_view_button.pack(side=ctk.LEFT, padx=(10, 0), pady=5)
@@ -103,6 +103,20 @@ class NavigationToolbar(ctk.CTkFrame):
             tooltip_message="configure the figure"
         )
         self.configure_subplots_button.pack(side=ctk.LEFT, padx=(10, 0), pady=5)
+        
+        self.reset_subplots_button = TooltipButton(
+            self,
+            height=30,
+            width=30,
+            text="\uf122",
+            font=("FontAwesome", 20),
+            fg_color=Theme.GRAY_BUTTON,
+            text_color=Theme.GRAY_BUTTON_TEXT,
+            hover_color=Theme.GRAY_BUTTON_HOVER,
+            command=self.reset_config_clicked,
+            tooltip_message="reset figure configuration"
+        )
+        self.reset_subplots_button.pack(side=ctk.LEFT, padx=(10, 0), pady=5)
         
         self.save_button = TooltipButton(
             self,
@@ -203,6 +217,9 @@ class NavigationToolbar(ctk.CTkFrame):
                 ]
         ) 
         self.controller.save_plot(output_path)
+        
+    def reset_config_clicked(self):
+        self.controller.reset_config()
 
     def set_color_activated(self, widget, activated: bool):
         if activated:

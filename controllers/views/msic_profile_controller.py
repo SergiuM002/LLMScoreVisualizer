@@ -6,6 +6,7 @@ from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from controllers.views.plot_creation_controller import PlotCreationController
+from contextlib import contextmanager
 
 class MSICProfileController(PlotCreationController):
     def __init__(self, main_ctrl):
@@ -17,9 +18,19 @@ class MSICProfileController(PlotCreationController):
         self.genbank_uploaded = False
         self.genbank_links = {}
         
+        self.update_timer = None
+        
+        self.plot_config_data = {}
+        self.default_plot_config_data = {}
+        self.plot_settings_data = {}
+        
+        self._suppress_traces = False
+
+        
     def connect_view(self, view):
         self.view = view
         
+    # Limits the line width values to the range [1;2]
     def validate_width(self, P):
         if P == "":
             return True
@@ -33,6 +44,7 @@ class MSICProfileController(PlotCreationController):
         except ValueError:
             return False
         
+    # Limits values to positive integers
     def validate_positive_int(self, P):
         if P == "":
             return True
@@ -44,7 +56,7 @@ class MSICProfileController(PlotCreationController):
         except ValueError:
             return False
         
-    def get_plot(self, df, genbank_file=None):
+    def get_plot(self, df, csv_path, default_plot_config=False, genbank_file=None):
         df["position_region"] = np.arange(len(df))
         
         if genbank_file:
@@ -117,7 +129,7 @@ class MSICProfileController(PlotCreationController):
                 "UTR": "gold",
                 "intron": "lightblue"
             }
-        
+            
         rolling_line_width = float(self.view.width_var.get())
         rolling_window = int(self.view.window_var.get())
         rolling_step = int(self.view.step_var.get())
@@ -133,7 +145,7 @@ class MSICProfileController(PlotCreationController):
                 colors.append("green")
             elif value <= -0.5:
                 colors.append("red")
-            else:   
+            else:       
                 colors.append("#DCDCDC80")
                 
         fig, ax = plt.subplots(figsize=(13*self.main_ctrl.height_quo, 5.5*self.main_ctrl.height_quo))
@@ -208,7 +220,19 @@ class MSICProfileController(PlotCreationController):
             ])
         
         fig.subplots_adjust(bottom=0.2, top=0.9)    
-        ax.legend(handles=legend_elements, loc="upper center", bbox_to_anchor=(0.5, -0.125), ncol=4, frameon=False)
+        
+        if self.plot_config_data and csv_path in self.plot_config_data and not default_plot_config:
+            fig.subplots_adjust(**self.plot_config_data[csv_path]["subplot_params"])
+            ax.set_xlim(**self.plot_config_data[csv_path]["xlims"])
+            ax.set_ylim(**self.plot_config_data[csv_path]["ylims"])
+        if csv_path not in self.plot_config_data:
+            self.update_plot_config(ax=ax, fig=fig, file_path=csv_path, default_values=True)
+        if default_plot_config:
+            fig.subplots_adjust(**self.default_plot_config_data[csv_path]["subplot_params"])
+            ax.set_xlim(**self.default_plot_config_data[csv_path]["xlims"])
+            ax.set_ylim(**self.default_plot_config_data[csv_path]["ylims"])
+                    
+        fig.legend(handles=legend_elements, loc="upper center", bbox_to_anchor=(0.5, 0.08), ncol=4, frameon=False)
         
         return fig, ax
     
@@ -224,6 +248,8 @@ class MSICProfileController(PlotCreationController):
         if self.fig:
             self.ax.clear()
             plt.close(self.fig)
+            self.ax = None
+            self.fig = None
         
         for plot in self.view.plot_frame.winfo_children():
             plot.destroy()
@@ -241,17 +267,106 @@ class MSICProfileController(PlotCreationController):
             if csv_path in self.genbank_links[key]:
                 genbank_file = key
                 break
+        
+        with self.silence_traces():
+            if self.plot_settings_data and csv_path in self.plot_settings_data:
+                self.view.step_var.set(self.plot_settings_data[csv_path]["step_size"])
+                self.view.window_var.set(self.plot_settings_data[csv_path]["window_size"])
+                self.view.width_var.set(self.plot_settings_data[csv_path]["line_width"])
+                self.view.plot_type_selection.set(self.plot_settings_data[csv_path]["plot_type"])
+            else:
+                self.view.step_var.set(1)
+                self.view.window_var.set(20)
+                self.view.width_var.set(1)
+                self.view.plot_type_selection.set("scatter plot")  
             
-        self.fig, self.ax = self.get_plot(df, genbank_file)
+        self.fig, self.ax = self.get_plot(df, csv_path, genbank_file)
         
         base_string = df["ref"].str.cat()
         msic_scores = list(df["MSIC"])
                 
         self.view.show_interactive_view(self.fig)
 
+        self.view.canvas.mpl_connect("draw_event", lambda e: self.update_plot_config(ax=self.ax, fig=self.fig, event=e, file_path=csv_path))
         self.view.canvas.mpl_connect("scroll_event", self.plot_zoom(ax=self.ax))
         self.view.canvas.mpl_connect("motion_notify_event", lambda e: self.plot_hover_event(e, self.ax, base_string, msic_scores))
         
+    @contextmanager
+    def silence_traces(self):
+        self._suppress_traces = True
+        try:
+            yield
+        finally:
+            self._suppress_traces = False
+        
+    def update_plot(self, *args):      
+        if self._suppress_traces:
+            return
+           
+        if self.update_timer is not None:
+            self.view.after_cancel(self.update_timer)
+            self.update_timer = None
+        if self.update_timer is None and self.fig is not None:
+            self.update_timer = self.view.after(700, lambda: self.preview_plot(self.file_list[self.csv_index]))     
+            
+    def update_plot_settings(self, *args):
+        if self._suppress_traces:
+            return
+        
+        step_size = int(self.view.step_var.get())
+        window_size = int(self.view.window_var.get())
+        line_width = float(self.view.width_var.get())
+        plot_type = self.view.plot_type_selection.get() 
+        
+        self.plot_settings_data[self.file_list[self.csv_index]] = {
+            "step_size": step_size,
+            "window_size": window_size,
+            "line_width": line_width,
+            "plot_type": plot_type
+        }
+        
+           
+    # Returns the current subplot spacing parameters as a dictionary
+    def update_plot_config(self, file_path, ax, fig, default_values=False, event=None):
+        if fig is not None:
+            pars = fig.subplotpars
+            subplot_params = {
+                "left": pars.left,
+                "right": pars.right,
+                "bottom": pars.bottom,
+                "top": pars.top,
+                "wspace": pars.wspace,
+                "hspace": pars.hspace,
+            }
+        
+        if ax is not None:
+            xmin, xmax = ax.get_xlim()
+            ymin, ymax = ax.get_ylim()
+            
+            xlims = {
+                "left": xmin,
+                "right": xmax
+                
+            }
+            ylims = {
+                "bottom": ymin,
+                "top": ymax
+            }
+        
+        if not default_values:
+            self.plot_config_data[file_path] = {
+                "subplot_params": subplot_params,
+                "xlims": xlims,
+                "ylims": ylims
+            }
+        else:
+            self.default_plot_config_data[file_path] = {
+                "subplot_params": subplot_params,
+                "xlims": xlims,
+                "ylims": ylims
+            }
+            
+                                
     def plot_zoom(self, ax, base_scale=1.1):
         def zoom_ev(event):
             cur_xlim = ax.get_xlim()

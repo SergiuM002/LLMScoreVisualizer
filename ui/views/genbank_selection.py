@@ -112,7 +112,7 @@ class GenbankSelection(ctk.CTkToplevel):
         )
         self.confirm_button.pack(side=ctk.BOTTOM, pady=(15))
         
-        controller.load_csvs()
+        controller.load_imported_csvs()
         controller.csvs_set_disabled_all()
         controller.load_imported_genbanks()
         

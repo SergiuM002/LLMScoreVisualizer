@@ -43,7 +43,7 @@ class PlotCreationController(ABC):
                     genbank_file = key
                     break
              
-            figure, _ = self.get_plot(df, genbank_file)
+            figure, _ = self.get_plot(df, csv_path, genbank_file)
                 
             file_name =  Path(csv_path).stem
             

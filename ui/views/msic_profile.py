@@ -1,12 +1,5 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
-from matplotlib.lines import Line2D
 from matplotlib.widgets import Cursor
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from Bio import SeqIO
-from Bio.SeqFeature import CompoundLocation
 import customtkinter as ctk
 import tkinter as tk
 from ui.views.plot_creation import PlotCreation
@@ -22,7 +15,6 @@ class MSICProfile(PlotCreation):
         
         self.controller = controller
         self.custom_toolbar = None
-        self.update_timer = None
         
         controller.connect_view(self)
         
@@ -51,7 +43,8 @@ class MSICProfile(PlotCreation):
         self.rolling_step_label.pack(side=ctk.LEFT)
         
         self.step_var = ctk.StringVar(value="1")
-        self.step_var.trace_add("write", self._update_plot)
+        self.step_var.trace_add("write", lambda *args: self.controller.update_plot_settings("step_size"))
+        self.step_var.trace_add("write", self.controller.update_plot)
         self.rolling_step_entry = ctk.CTkEntry(
             self.rolling_entry_frame,
             textvariable=self.step_var,
@@ -70,7 +63,8 @@ class MSICProfile(PlotCreation):
         )
         
         self.window_var = ctk.StringVar(value="20")
-        self.window_var.trace_add("write", self._update_plot)
+        self.window_var.trace_add("write", lambda *args: self.controller.update_plot_settings("window_size"))
+        self.window_var.trace_add("write", self.controller.update_plot)
         self.rolling_window_entry = ctk.CTkEntry(
             self.rolling_entry_frame,
             textvariable=self.window_var,
@@ -107,6 +101,8 @@ class MSICProfile(PlotCreation):
         
         self.width_var = ctk.StringVar(value="1.0")
         self.width_var.trace_add("write", self.update_slider_from_entry)
+        self.width_var.trace_add("write", lambda *args: self.controller.update_plot_settings("line_width"))
+        self.width_var.trace_add("write", self.controller.update_plot)
         self.rolling_entry = ctk.CTkEntry(
             self.rolling_slider_frame, 
             width=40,
@@ -180,7 +176,8 @@ class MSICProfile(PlotCreation):
         self.plot_type_label.pack()
         
         self.plot_type_selection = ctk.StringVar(self.plot_type_frame, "scatter plot")
-        self.plot_type_selection.trace_add("write", self._update_plot)
+        self.plot_type_selection.trace_add("write", lambda *args: self.controller.update_plot_settings("plot_type"))
+        self.plot_type_selection.trace_add("write", self.controller.update_plot)
         plot_type_options = ["scatter plot", "bar plot", "vertical line plot"]
         self.plot_type_listbox = ctk.CTkComboBox(
             self.plot_type_frame,
@@ -198,17 +195,7 @@ class MSICProfile(PlotCreation):
         self.genbank_button.configure(state="disabled")
         GenbankSelection(GenbankSelectionController(self.controller.main_ctrl), self)
         
-    def _update_plot(self, *args):
-        if self.update_timer is not None:
-                    self.after_cancel(self.update_timer)
-                    self.update_timer = None
-                    
-        if self.update_timer is None:
-            self.update_timer = self.after(700, self.controller.preview_plot)  
-        
-    def update_slider_from_entry(self, *args):
-        self._update_plot()
-          
+    def update_slider_from_entry(self, *args):  
         try:
             raw_val = self.width_var.get()
             if raw_val in ["", ".", "-"]: 
@@ -220,9 +207,7 @@ class MSICProfile(PlotCreation):
         except ValueError:
             pass
 
-    def update_entry_from_slider(self, slider_val):
-        self._update_plot()
-                    
+    def update_entry_from_slider(self, slider_val):                    
         entry_val = slider_val * 2
         
         self.width_var.set(f"{entry_val:.2f}")
