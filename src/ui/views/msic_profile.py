@@ -7,6 +7,7 @@ from ui.views.genbank_selection import GenbankSelection
 from controllers.views.genbank_selection_controller import GenbankSelectionController
 from ui.components.navigation_toolbar import NavigationToolbar
 from controllers.components.navigation_toolbar_controller import NavigationToolbarController
+from ui.error_popup import ErrorPopup
 from config.styles import Theme
 
 class MSICProfile(PlotCreation):   
@@ -278,7 +279,15 @@ class MSICProfile(PlotCreation):
             self.base_bar.tag_add("highlight", f"1.{pos_dist}", f"1.{pos_dist + 1}")
             
         self.base_bar.configure(state="disabled")
+  
+    def show_no_sequence_error(self, file_name):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, f"GenBank file '{file_name}' has no sequence letters.")
         
+    def show_no_features_error(self, file_name):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, f"GenBank file '{file_name}' has no feature annotations.") 
         
-
-        
+    def show_invalid_genbank_error(self, file_name):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, f"GenBank file '{file_name}' is not a valid GenBank.") 

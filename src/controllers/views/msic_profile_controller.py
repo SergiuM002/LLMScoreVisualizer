@@ -7,6 +7,7 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from controllers.views.plot_creation_controller import PlotCreationController
 from contextlib import contextmanager
+from pathlib import Path
 
 class MSICProfileController(PlotCreationController):
     def __init__(self, main_ctrl):
@@ -56,80 +57,119 @@ class MSICProfileController(PlotCreationController):
         except ValueError:
             return False
         
+    def calculate_annotation_positions(self, gbk_record, seq, df):
+        gbk_seq = str(gbk_record.seq).upper()    
+    
+        # Match GenBank sequence
+        match_start = seq.find(gbk_seq)
+        
+        gbk_region_start = match_start + 1
+        
+        ann = pd.DataFrame({
+            "position_region": df["position_region"].values,
+            "region_type_coarse": "intergenic",
+            "region_type_fine": "intergenic"
+        })
+        ann["priority"] = 0
+
+        gene_mask = ann["position_region"]
+        ann.loc[gene_mask, "region_type_coarse"] = "gene_body"
+        ann.loc[gene_mask, "region_type_fine"] = "gene_body"
+        
+        feature_priority = {
+            "CDS": 5,
+            "5'UTR": 4,
+            "3'UTR": 4,
+            "exon": 3,
+            "intron": 2
+        }
+
+        for feature in gbk_record.features:
+            ftype = feature.type
+            if ftype not in ["CDS", "5'UTR", "3'UTR", "exon", "intron"]:
+                continue
+
+            for start_local, end_local in self.extract_ranges(feature):
+                region_start = self.gbk_local_to_region(start_local, gbk_region_start)
+                region_end   = self.gbk_local_to_region(end_local, gbk_region_start)
+
+                low = min(region_start, region_end)
+                high = max(region_start, region_end)
+
+                mask = ann["position_region"].between(low, high)
+                pr = feature_priority[ftype]
+
+                overwrite = mask & (ann["priority"] < pr)
+                ann.loc[overwrite, "region_type_coarse"] = ftype
+                ann.loc[overwrite, "region_type_fine"] = ftype
+                ann.loc[overwrite, "priority"] = pr
+
+        ann["region_type_simple"] = ann["region_type_coarse"].apply(self.simplify_region)
+        
+        merged = df.merge(
+            ann.drop(columns="priority"),
+            on="position_region",
+            how="left",
+            validate="one_to_one"
+        )
+        
+        if self.view.reverse_ann.get():
+            plot_df = merged[::-1].copy()
+            plot_df["position_region"] = range(len(plot_df))
+        else:
+            plot_df = merged
+        
+        region_colors = {
+            "CDS": "lightgreen",
+            "UTR": "gold",
+            "intron": "lightblue"
+        }
+        
+        return plot_df, region_colors
+    
+    def apply_annotation(self, ax, plot_df, region_colors, legend_elements):
+        start_idx = 0
+        current_region = plot_df.iloc[0]["region_type_simple"]
+        
+        for i in range(1, len(plot_df)):
+            region_i = plot_df.iloc[i]["region_type_simple"]
+            if region_i != current_region:
+                x0 = plot_df.iloc[start_idx]["position_region"]
+                x1 = plot_df.iloc[i - 1]["position_region"]
+                if current_region in region_colors:
+                    ax.axvspan(x0, x1, color=region_colors[current_region], alpha=0.22)
+                start_idx = i
+                current_region = region_i
+
+        x0 = plot_df.iloc[start_idx]["position_region"]
+        x1 = plot_df.iloc[-1]["position_region"]
+        if current_region in region_colors:
+            ax.axvspan(x0, x1, color=region_colors[current_region], alpha=0.22)
+            
+        legend_elements.extend([
+            Patch(facecolor="lightgreen", edgecolor="none", alpha=0.22, label="CDS"),
+            Patch(facecolor="gold", edgecolor="none", alpha=0.22, label="UTR"),
+            Patch(facecolor="lightblue", edgecolor="none", alpha=0.22, label="intron"),
+        ])   
+        
     def get_plot(self, df, csv_path, genbank_file=None):
         df["position_region"] = np.arange(len(df))
         
         if genbank_file:
+            plot_df = None
             seq = "".join(df["ref"].astype(str)).upper()
-            gbk_record = SeqIO.read(genbank_file, "genbank")
-
-            gbk_seq = str(gbk_record.seq).upper()
-            
-            # Match GenBank sequence
-            match_start = seq.find(gbk_seq)
-            
-            gbk_region_start = match_start + 1
-            
-            ann = pd.DataFrame({
-                "position_region": df["position_region"].values,
-                "region_type_coarse": "intergenic",
-                "region_type_fine": "intergenic"
-            })
-            ann["priority"] = 0
-
-            gene_mask = ann["position_region"]
-            ann.loc[gene_mask, "region_type_coarse"] = "gene_body"
-            ann.loc[gene_mask, "region_type_fine"] = "gene_body"
-            
-            feature_priority = {
-                "CDS": 5,
-                "5'UTR": 4,
-                "3'UTR": 4,
-                "exon": 3,
-                "intron": 2
-            }
-
-            for feat in gbk_record.features:
-                ftype = feat.type
-                if ftype not in ["CDS", "5'UTR", "3'UTR", "exon", "intron"]:
-                    continue
-
-                for start_local, end_local in self.extract_ranges(feat):
-                    region_start = self.gbk_local_to_region(start_local, gbk_region_start)
-                    region_end   = self.gbk_local_to_region(end_local, gbk_region_start)
-
-                    low = min(region_start, region_end)
-                    high = max(region_start, region_end)
-
-                    mask = ann["position_region"].between(low, high)
-                    pr = feature_priority[ftype]
-
-                    overwrite = mask & (ann["priority"] < pr)
-                    ann.loc[overwrite, "region_type_coarse"] = ftype
-                    ann.loc[overwrite, "region_type_fine"] = ftype
-                    ann.loc[overwrite, "priority"] = pr
-
-            ann["region_type_simple"] = ann["region_type_coarse"].apply(self.simplify_region)
-            
-            merged = df.merge(
-                ann.drop(columns="priority"),
-                on="position_region",
-                how="left",
-                validate="one_to_one"
-            )
-            
-            if self.view.reverse_ann.get():
-                plot_df = merged[::-1].copy()
-                plot_df["position_region"] = range(len(plot_df))
-            else:
-                plot_df = merged
-            
-            region_colors = {
-                "CDS": "lightgreen",
-                "UTR": "gold",
-                "intron": "lightblue"
-            }
-            
+            try:
+                gbk_record = SeqIO.read(genbank_file, "genbank")
+                
+                if not gbk_record.seq.defined:
+                    self.view.show_no_sequence_error(Path(genbank_file).name)    
+                elif not gbk_record.features:
+                    self.view.show_no_features_error(Path(genbank_file).name)
+                else:
+                    plot_df, region_colors = self.calculate_annotation_positions(gbk_record=gbk_record, seq=seq, df=df)
+            except ValueError:
+                self.view.show_invalid_genbank_error(Path(genbank_file).name)  
+                
         rolling_line_width = float(self.view.width_var.get())
         rolling_window = int(self.view.window_var.get())
         rolling_step = int(self.view.step_var.get())
@@ -194,30 +234,11 @@ class MSICProfileController(PlotCreationController):
                 Line2D([0], [0], color='black', lw=1.5, label="rolling mean"),
         ]
         
-        if genbank_file:
-            start_idx = 0
-            current_region = plot_df.iloc[0]["region_type_simple"]
-            
-            for i in range(1, len(plot_df)):
-                region_i = plot_df.iloc[i]["region_type_simple"]
-                if region_i != current_region:
-                    x0 = plot_df.iloc[start_idx]["position_region"]
-                    x1 = plot_df.iloc[i - 1]["position_region"]
-                    if current_region in region_colors:
-                        ax.axvspan(x0, x1, color=region_colors[current_region], alpha=0.22)
-                    start_idx = i
-                    current_region = region_i
-
-            x0 = plot_df.iloc[start_idx]["position_region"]
-            x1 = plot_df.iloc[-1]["position_region"]
-            if current_region in region_colors:
-                ax.axvspan(x0, x1, color=region_colors[current_region], alpha=0.22)
-                
-            legend_elements.extend([
-                Patch(facecolor="lightgreen", edgecolor="none", alpha=0.22, label="CDS"),
-                Patch(facecolor="gold", edgecolor="none", alpha=0.22, label="UTR"),
-                Patch(facecolor="lightblue", edgecolor="none", alpha=0.22, label="intron"),
-            ])
+        if genbank_file and plot_df is not None:
+            self.apply_annotation(ax=ax, plot_df=plot_df, region_colors=region_colors, legend_elements=legend_elements)
+            bbox_parameters = (0.5, 0.12)
+        else:
+            bbox_parameters = (0.5, 0.08)
         
         fig.subplots_adjust(bottom=0.2, top=0.9)    
         
@@ -227,12 +248,8 @@ class MSICProfileController(PlotCreationController):
             ax.set_ylim(**self.plot_config_data[csv_path]["ylims"])
         if csv_path not in self.plot_config_data:
             self.update_plot_config(ax=ax, fig=fig, file_path=csv_path, default_values=True)
-        '''if default_plot_config:
-            fig.subplots_adjust(**self.default_plot_config_data[csv_path]["subplot_params"])
-            ax.set_xlim(**self.default_plot_config_data[csv_path]["xlims"])
-            ax.set_ylim(**self.default_plot_config_data[csv_path]["ylims"])'''
                     
-        fig.legend(handles=legend_elements, loc="upper center", bbox_to_anchor=(0.5, 0.08), ncol=4, frameon=False)
+        fig.legend(handles=legend_elements, loc="upper center", bbox_to_anchor=bbox_parameters, ncol=4, frameon=False)
         
         return fig, ax
     
