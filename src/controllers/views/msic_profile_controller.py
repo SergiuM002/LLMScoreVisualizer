@@ -57,11 +57,15 @@ class MSICProfileController(PlotCreationController):
         except ValueError:
             return False
         
-    def calculate_annotation_positions(self, gbk_record, seq, df):
+    def calculate_annotation_positions(self, gbk_record, seq, df, csv_file, genbank_file):
         gbk_seq = str(gbk_record.seq).upper()    
     
         # Match GenBank sequence
         match_start = seq.find(gbk_seq)
+        
+        if match_start == -1:
+            self.view.show_non_matching_error(genbank_file=Path(genbank_file).name, csv_file=Path(csv_file).name)
+            return None, None
         
         gbk_region_start = match_start + 1
         
@@ -166,7 +170,7 @@ class MSICProfileController(PlotCreationController):
                 elif not gbk_record.features:
                     self.view.show_no_features_error(Path(genbank_file).name)
                 else:
-                    plot_df, region_colors = self.calculate_annotation_positions(gbk_record=gbk_record, seq=seq, df=df)
+                    plot_df, region_colors = self.calculate_annotation_positions(gbk_record=gbk_record, seq=seq, df=df, csv_file= csv_path, genbank_file=genbank_file)
             except ValueError:
                 self.view.show_invalid_genbank_error(Path(genbank_file).name)  
                 

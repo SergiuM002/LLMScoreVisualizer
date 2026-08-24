@@ -291,3 +291,7 @@ class MSICProfile(PlotCreation):
     def show_invalid_genbank_error(self, file_name):
         scaling = self.controller.main_ctrl.height_quo
         ErrorPopup(self.controller.main_ctrl.root, scaling, f"GenBank file '{file_name}' is not a valid GenBank.") 
+        
+    def show_non_matching_error(self, genbank_file, csv_file):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, f"GenBank file '{genbank_file}' does not include the sequence in '{csv_file}'.") 

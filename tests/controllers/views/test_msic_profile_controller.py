@@ -45,6 +45,14 @@ FEATURES             Location/Qualifiers
                      /gene="testGene"
 //"""
 
+GBK_NON_MATCHING = """LOCUS       TEST_REC1                 12 bp    DNA     linear   SYN 01-JAN-2024
+FEATURES             Location/Qualifiers
+     gene            1..12
+                     /gene="testGene"
+ORIGIN
+        1 atgcgtgcat gc
+"""
+
 class TestCSVImportMenuController(unittest.TestCase):
     
     def setUp(self):
@@ -70,21 +78,32 @@ class TestCSVImportMenuController(unittest.TestCase):
         self.controller.view.show_no_sequence_error.assert_not_called()
         self.controller.view.show_no_features_error.assert_not_called()
         self.controller.view.show_invalid_genbank_error.assert_not_called()
+        self.controller.view.show_non_matching_error.assert_not_called()
         
     def test_get_plot_failure_no_features(self):
         self.controller.get_plot(df=self.df, csv_path=str(self.csv_path), genbank_file=str(self._create_gbk(GBK_NO_FEATURES)))
         self.controller.view.show_no_sequence_error.assert_not_called()
         self.controller.view.show_no_features_error.assert_called_once()
         self.controller.view.show_invalid_genbank_error.assert_not_called()
+        self.controller.view.show_non_matching_error.assert_not_called()
         
     def test_get_plot_failure_no_sequence(self):
         self.controller.get_plot(df=self.df, csv_path=str(self.csv_path), genbank_file=str(self._create_gbk(GBK_NO_SEQUENCE)))
         self.controller.view.show_no_sequence_error.assert_called_once()
         self.controller.view.show_no_features_error.assert_not_called()
         self.controller.view.show_invalid_genbank_error.assert_not_called()
+        self.controller.view.show_non_matching_error.assert_not_called()
         
     def test_get_plot_failure_invalid_gbk(self):
         self.controller.get_plot(df=self.df, csv_path=str(self.csv_path), genbank_file=str(self._create_gbk(GBK_INVALID)))
         self.controller.view.show_no_sequence_error.assert_not_called()
         self.controller.view.show_no_features_error.assert_not_called()
         self.controller.view.show_invalid_genbank_error.assert_called_once()
+        self.controller.view.show_non_matching_error.assert_not_called()
+        
+    def test_get_plot_failure_non_matching(self):
+        self.controller.get_plot(df=self.df, csv_path=str(self.csv_path), genbank_file=str(self._create_gbk(GBK_NON_MATCHING)))
+        self.controller.view.show_no_sequence_error.assert_not_called()
+        self.controller.view.show_no_features_error.assert_not_called()
+        self.controller.view.show_invalid_genbank_error.assert_not_called()
+        self.controller.view.show_non_matching_error.assert_called_once()
