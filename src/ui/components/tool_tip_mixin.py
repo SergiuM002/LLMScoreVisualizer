@@ -46,9 +46,13 @@ class ToolTipMixin():
     def hide_tooltip(self, event=None):
         if event:
             hovered = self.winfo_containing(event.x_root, event.y_root)
+            
+            is_on_tooltip = False
+            if self.tooltip:
+                is_on_tooltip = (hovered == self.tooltip or str(hovered).startswith(str(self.tooltip) + "."))
 
             # Ignore false <Leave> events if the mouse is still on self or internal children
-            if hovered and (hovered == self or str(hovered).startswith(str(self) + ".")):
+            if hovered and not is_on_tooltip and (hovered == self or (str(hovered).startswith(str(self) + "."))):
                 return
             
         if self._tooltip_timer is not None:
