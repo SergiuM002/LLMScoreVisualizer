@@ -3,6 +3,7 @@ from customtkinter import filedialog
 from config.styles import Theme
 from ui.components.file_button import FileButton
 from CTkMessagebox import CTkMessagebox
+from ui.error_popup import ErrorPopup
 import config.environment as env
 import subprocess
 
@@ -180,33 +181,11 @@ class GenbankSelection(ctk.CTkToplevel):
         
     def show_already_imported_error(self):
         scaling = self.controller.main_ctrl.height_quo
-        CTkMessagebox(
-            master=self.controller.main_ctrl.root,
-            title="Error",
-            message="File is already imported.",
-            icon="cancel",
-            width=int(400*scaling),
-            height=int(200*scaling),
-            button_width=int(110*scaling),
-            button_height=int(35*scaling),
-            button_color=Theme.GREEN_BUTTON,
-            button_hover_color=Theme.GREEN_BUTTON_HOVER
-        )  
+        ErrorPopup(self.controller.main_ctrl.root, scaling, "File is already imported.")
         
     def show_invalid_file_extension_error(self):
         scaling = self.controller.main_ctrl.height_quo
-        CTkMessagebox(
-            master=self.controller.main_ctrl.root,
-            title="Error",
-            message="Invalid file extention. Valid file extensions are: .gb, .gbk, .gbff",
-            icon="cancel",
-            width=int(400*scaling),
-            height=int(200*scaling),
-            button_width=int(110*scaling),
-            button_height=int(35*scaling),
-            button_color=Theme.GREEN_BUTTON,
-            button_hover_color=Theme.GREEN_BUTTON_HOVER
-        )   
+        ErrorPopup(self.controller.main_ctrl.root, scaling, "Invalid file extention. Valid file extensions are: .gb, .gbk, .gbff")
 
     def confirm_clicked(self):
         self.controller.pass_genbank_binds()

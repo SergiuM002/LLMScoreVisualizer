@@ -56,7 +56,7 @@ class MSICProfileController(PlotCreationController):
         except ValueError:
             return False
         
-    def get_plot(self, df, csv_path, default_plot_config=False, genbank_file=None):
+    def get_plot(self, df, csv_path, genbank_file=None):
         df["position_region"] = np.arange(len(df))
         
         if genbank_file:
@@ -221,16 +221,16 @@ class MSICProfileController(PlotCreationController):
         
         fig.subplots_adjust(bottom=0.2, top=0.9)    
         
-        if self.plot_config_data and csv_path in self.plot_config_data and not default_plot_config:
+        if self.plot_config_data and csv_path in self.plot_config_data:
             fig.subplots_adjust(**self.plot_config_data[csv_path]["subplot_params"])
             ax.set_xlim(**self.plot_config_data[csv_path]["xlims"])
             ax.set_ylim(**self.plot_config_data[csv_path]["ylims"])
         if csv_path not in self.plot_config_data:
             self.update_plot_config(ax=ax, fig=fig, file_path=csv_path, default_values=True)
-        if default_plot_config:
+        '''if default_plot_config:
             fig.subplots_adjust(**self.default_plot_config_data[csv_path]["subplot_params"])
             ax.set_xlim(**self.default_plot_config_data[csv_path]["xlims"])
-            ax.set_ylim(**self.default_plot_config_data[csv_path]["ylims"])
+            ax.set_ylim(**self.default_plot_config_data[csv_path]["ylims"])'''
                     
         fig.legend(handles=legend_elements, loc="upper center", bbox_to_anchor=(0.5, 0.08), ncol=4, frameon=False)
         
@@ -280,7 +280,7 @@ class MSICProfileController(PlotCreationController):
                 self.view.width_var.set(1)
                 self.view.plot_type_selection.set("scatter plot")  
             
-        self.fig, self.ax = self.get_plot(df, csv_path, genbank_file)
+        self.fig, self.ax = self.get_plot(df=df, csv_path=csv_path, genbank_file=genbank_file)
         
         base_string = df["ref"].str.cat()
         msic_scores = list(df["MSIC"])

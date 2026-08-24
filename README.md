@@ -10,7 +10,7 @@ Clone the repository to your system using `git clone <repository-link>`.
 Create the venv environment using `python -m venv .venv`, activate it and install the required packages from the requirements.txt with `pip install -r requirements.txt`.
 
 ### Use the GUI
-Now you can launch the GUI from "main.py" and import csv files with the scores to be plotted.
+Now you can launch the GUI from "src/main.py" and import csv files with the scores to be plotted.
 
 ## Building the program
 If you want to not have to launch the script from within the environment in the terminal, follow these steps to create an executable.
