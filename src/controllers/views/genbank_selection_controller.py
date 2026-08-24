@@ -27,12 +27,17 @@ class GenbankSelectionController:
         
     # Adds GenBank to list
     def add_genbank(self, file_path):
-        if file_path not in self.genbank_files:
+        if file_path in self.genbank_files:
+            self.view.show_already_imported_error()
+            return False
+        elif Path(file_path).suffix not in [".gb", ".gbk", ".gbff"]:
+            self.view.show_invalid_file_extension_error()
+            return False
+        else: 
             self.selected_csv[file_path] = []
             self.genbank_files.append(file_path)
-            self.view.pack_genbank_button(Path(file_path).name, file_path, file_path)
-        else:
-            self.view.show_already_imported_error()
+            self.view.pack_genbank_button(Path(file_path).name, file_path, file_path)   
+            return True
         
     # Removes GenBank from list
     def remove_genbank(self):
@@ -100,4 +105,5 @@ class GenbankSelectionController:
         plot_controller.genbank_uploaded = True
         plot_controller.preview_plot()
     
+
                     

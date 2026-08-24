@@ -1,6 +1,5 @@
 from pathlib import Path
-from config.styles import Theme
-
+import csv
 
 class CSVImportMenuController:
     def __init__(self, main_ctrl):
@@ -34,11 +33,25 @@ class CSVImportMenuController:
         self.view = view
         
     def add_csv(self, file_path):
-        if file_path not in self.csv_files:
+        if file_path in self.csv_files:
+            self.view.show_already_imported_error()
+            return False   
+        elif Path(file_path).suffix != ".csv":
+            self.view.show_invalid_file_extension_error()
+            return False
+        elif not (result := self._valid_columns(file_path))[0]:
+            self.view.show_invalid_columns_error(result[1])
+            return False
+        elif not self._msic_in_range(file_path):
+            self.view.show_invalid_msic_error()  
+            return False
+        elif not self._valid_nucleotides(file_path):
+            self.view.show_invalid_nucleotide_error()
+            return False
+        else:
             self.csv_files.append(file_path)
             self.view.pack_csv_button(Path(file_path).name, file_path, file_path)
-        else:
-            self.view.show_already_imported_error()
+            return True
             
     def toggle_csv(self, button):
         button_index = self.view.csv_buttons.index(button)
@@ -72,5 +85,34 @@ class CSVImportMenuController:
         plot_controller.file_list = self.csv_files
         plot_controller.preview_plot()                    
         
+    def _msic_in_range(self, file_path):
+        with open(file_path, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                val = float(row["MSIC"])
+                if not (-1 <= val <= 1):
+                    return False
+                
+        return True
+    
+    def _valid_nucleotides(self, file_path):
+        with open(file_path, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                val = str(row["ref"])
+                if val.lower() not in ["a", "c", "g", "t"]:
+                    return False
+                        
+        return True  
+    
+    def _valid_columns(self, file_path):
+        with open(file_path, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            
+            if "ref" not in reader.fieldnames:
+                return (False, "ref")
+            elif "MSIC" not in reader.fieldnames:
+                return (False, "MSIC")
         
+        return (True, "")
                     

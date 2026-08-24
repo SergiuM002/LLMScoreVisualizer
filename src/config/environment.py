@@ -10,4 +10,4 @@ try:
 except AttributeError:
     BASE_DIR = Path(__file__).resolve().parent.parent
 
-IMAGES_DIR = BASE_DIR / "images"
+IMAGES_DIR = BASE_DIR / "src" / "images"

@@ -5,6 +5,7 @@ import config.environment as env
 import subprocess
 from CTkMessagebox import CTkMessagebox
 from ui.components.file_button import FileButton
+from ui.error_popup import ErrorPopup
 
 class CSVImportMenu(ctk.CTkToplevel):   
     def __init__(self, controller, master, *args, **kwargs):   
@@ -117,18 +118,23 @@ class CSVImportMenu(ctk.CTkToplevel):
             
     def show_already_imported_error(self):
         scaling = self.controller.main_ctrl.height_quo
-        CTkMessagebox(
-            master=self.controller.main_ctrl.root,
-            title="Error",
-            message="File is already imported.",
-            icon="cancel",
-            width=int(400*scaling),
-            height=int(200*scaling),
-            button_width=int(110*scaling),
-            button_height=int(35*scaling),
-            button_color=Theme.GREEN_BUTTON,
-            button_hover_color=Theme.GREEN_BUTTON_HOVER
-        )      
+        ErrorPopup(self.controller.main_ctrl.root, scaling, "File is already imported.")
+                
+    def show_invalid_file_extension_error(self):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, "File is not a CSV file.")
+                
+    def show_invalid_columns_error(self, column):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, f"Missing required column: {column}.")    
+        
+    def show_invalid_msic_error(self):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, "One or more MSIC values are out range ([-1;1]).")       
+        
+    def show_invalid_nucleotide_error(self):
+        scaling = self.controller.main_ctrl.height_quo
+        ErrorPopup(self.controller.main_ctrl.root, scaling, "One or more values in the 'ref' column are not nucleotides (a, c, g, t).")        
             
     def csv_clicked(self, button):
         self.controller.toggle_csv(button)

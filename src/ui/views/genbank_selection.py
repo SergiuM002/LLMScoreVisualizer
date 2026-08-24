@@ -163,14 +163,14 @@ class GenbankSelection(ctk.CTkToplevel):
                         'zenity', 
                         '--file-selection', 
                         '--title=Select a GenBank file', 
-                        '--file-filter=GenBank files | *.gb *.gbk'
+                        '--file-filter=GenBank files | *.gb *.gbk *.gbff'
                     ],
                     stderr=subprocess.DEVNULL
                 ).decode('utf-8').strip()
             except subprocess.CalledProcessError:
                 return None
         else:
-            file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("GenBank files", "*.gb *.gbk")])
+            file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("GenBank files", "*.gb *.gbk *.gbff")])
             
         if file_path:
             self.controller.add_genbank(file_path)
@@ -192,6 +192,21 @@ class GenbankSelection(ctk.CTkToplevel):
             button_color=Theme.GREEN_BUTTON,
             button_hover_color=Theme.GREEN_BUTTON_HOVER
         )  
+        
+    def show_invalid_file_extension_error(self):
+        scaling = self.controller.main_ctrl.height_quo
+        CTkMessagebox(
+            master=self.controller.main_ctrl.root,
+            title="Error",
+            message="Invalid file extention. Valid file extensions are: .gb, .gbk, .gbff",
+            icon="cancel",
+            width=int(400*scaling),
+            height=int(200*scaling),
+            button_width=int(110*scaling),
+            button_height=int(35*scaling),
+            button_color=Theme.GREEN_BUTTON,
+            button_hover_color=Theme.GREEN_BUTTON_HOVER
+        )   
 
     def confirm_clicked(self):
         self.controller.pass_genbank_binds()
