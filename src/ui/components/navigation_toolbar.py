@@ -7,6 +7,7 @@ from config.styles import Theme
 from ui.components.tooltip_button import TooltipButton
 
 class NavigationToolbar(ctk.CTkFrame):   
+    """Custom navigation toolbar for the plot view."""
     def __init__(self, controller, master, **kwargs):   
         super().__init__(master, fg_color="transparent", **kwargs)
         
@@ -159,6 +160,7 @@ class NavigationToolbar(ctk.CTkFrame):
         self.set_plot_control_buttons()
         
     def set_plot_control_buttons(self):
+        """Sets the plot control buttons to the correct state based on active view."""
         plot_controller = self.master.controller
         
         if len(plot_controller.file_list) == 1:
@@ -187,6 +189,7 @@ class NavigationToolbar(ctk.CTkFrame):
         self.controller.show_next_plot()
         
     def save_clicked(self):
+        """Saves plot in the current view."""
         if env.OPERATING_SYSTEM == "Linux":
             try:
                 output_path = subprocess.check_output(
@@ -222,6 +225,7 @@ class NavigationToolbar(ctk.CTkFrame):
         self.controller.reset_config()
 
     def set_color_activated(self, widget, activated: bool):
+        """Changes the color of the button to show if it is activated."""
         if activated:
             widget.configure(
                 fg_color=Theme.GREEN_BUTTON,

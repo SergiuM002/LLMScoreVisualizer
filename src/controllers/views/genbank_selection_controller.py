@@ -27,6 +27,7 @@ class GenbankSelectionController:
         
     # Adds GenBank to list
     def add_genbank(self, file_path):
+        """Checks validity of GenBank and imports it."""
         if file_path in self.genbank_files:
             self.view.show_already_imported_error()
             return False
@@ -43,6 +44,8 @@ class GenbankSelectionController:
     def remove_genbank(self):
         if self.selected_genbank == -1:
             return
+        
+        # Unselect all buttons assigned to removed GenBank
         selected = self.selected_csv[self.genbank_files[self.selected_genbank]]
         for button in self.view.csv_buttons:
             if button.file_path in selected:
@@ -60,8 +63,8 @@ class GenbankSelectionController:
         for button in self.view.csv_buttons:
             button.set_enabled(False)
                 
-    # Makes the right csv buttons accessible according to prior selections
     def update_csvs_enabled(self, genbank_file_path):
+        """Makes the right csv buttons accessible according to GenBank selection."""
         selected = self.selected_csv[genbank_file_path]
         for button in self.view.csv_buttons:
             if button.file_path in selected or not button.selected:
@@ -73,6 +76,7 @@ class GenbankSelectionController:
         button_index = self.view.genbank_buttons.index(button)
     
         if self.selected_genbank != button_index:
+            # Unselect other selected GenBank
             if self.selected_genbank != -1:
                 prev_button = self.view.genbank_buttons[self.selected_genbank]
                 prev_button.set_selected(False)
@@ -81,7 +85,6 @@ class GenbankSelectionController:
             button.set_selected(True)
             self.view.genbank_remove.configure(state="normal")
             self.update_csvs_enabled(button.file_path)
-            
         else:        
             self.selected_genbank = -1
             button.set_selected(False)
@@ -96,9 +99,9 @@ class GenbankSelectionController:
             else:
                 self.selected_csv[self.genbank_files[self.selected_genbank]].remove(button.file_path)
                 button.set_selected(False)
-            
-    # Passes the selected binds to the plot creation controller
+      
     def pass_genbank_binds(self):
+        """Passes the selected binds to the plot creation controller."""
         plot_controller = self.view.master.controller
         
         plot_controller.genbank_links = self.selected_csv

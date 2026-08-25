@@ -33,30 +33,37 @@ class CSVImportMenuController:
         self.view = view
         
     def add_csv(self, file_path):
-        if file_path in self.csv_files:
-            self.view.show_already_imported_error()
-            return False   
-        elif Path(file_path).suffix != ".csv":
-            self.view.show_invalid_file_extension_error()
-            return False
-        elif not (result := self._valid_columns(file_path))[0]:
-            self.view.show_invalid_columns_error(result[1])
-            return False
-        elif not self._msic_in_range(file_path):
-            self.view.show_invalid_msic_error()  
-            return False
-        elif not self._valid_nucleotides(file_path):
-            self.view.show_invalid_nucleotide_error()
-            return False
-        else:
-            self.csv_files.append(file_path)
-            self.view.pack_csv_button(Path(file_path).name, file_path, file_path)
-            return True
+        """Checks validity of a csv file and imports it."""
+        try:
+            if file_path in self.csv_files:
+                self.view.show_already_imported_error()
+                return False   
+            elif Path(file_path).suffix != ".csv":
+                self.view.show_invalid_file_extension_error()
+                return False
+            elif not (result := self._valid_columns(file_path))[0]:
+                self.view.show_invalid_columns_error(result[1])
+                return False
+            elif not self._msic_in_range(file_path):
+                self.view.show_invalid_msic_error()  
+                return False
+            elif not self._valid_nucleotides(file_path):
+                self.view.show_invalid_nucleotide_error()
+                return False
+            else:
+                self.csv_files.append(file_path)
+                self.view.pack_csv_button(Path(file_path).name, file_path, file_path)
+                return True
+        # Ignore files that have changed paths since first import
+        except FileNotFoundError:
+            pass
             
     def toggle_csv(self, button):
         button_index = self.view.csv_buttons.index(button)
     
+
         if self.selected_csv != button_index:
+            # Unselect other selected buttons
             if self.selected_csv != -1:
                 prev_button = self.view.csv_buttons[self.selected_csv]
                 prev_button.set_selected(False)
@@ -86,6 +93,7 @@ class CSVImportMenuController:
         plot_controller.preview_plot()                    
         
     def _msic_in_range(self, file_path):
+        """Checks if all MSIC values are between -1 and 1 inclusively."""
         with open(file_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -96,6 +104,7 @@ class CSVImportMenuController:
         return True
     
     def _valid_nucleotides(self, file_path):
+        """Checks if the 'ref' column only contains bases."""
         with open(file_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -106,6 +115,7 @@ class CSVImportMenuController:
         return True  
     
     def _valid_columns(self, file_path):
+        """Checks that both the 'ref' and 'MSIC' columns are present."""
         with open(file_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             

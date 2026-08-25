@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 class Fonts:
+    """Stores resizeable Roboto font sizes."""
     def __init__(self, size_quo):
         self.roboto_fonts = {}
         

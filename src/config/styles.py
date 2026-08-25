@@ -1,5 +1,5 @@
 class Theme:
-    # Colors
+    """Stores colors commonly used across the program."""
     GRAY_BUTTON = ("gray65", "gray25")
     GRAY_BUTTON_TEXT = "white"
     GRAY_BUTTON_HOVER = ("gray60", "gray30")

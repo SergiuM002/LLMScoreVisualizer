@@ -197,6 +197,7 @@ class MSICProfile(PlotCreation):
         GenbankSelection(GenbankSelectionController(self.controller.main_ctrl), self)
         
     def update_slider_from_entry(self, *args):  
+        """Updates slider value based on entry value."""
         try:
             raw_val = self.width_var.get()
             if raw_val in ["", ".", "-"]: 
@@ -208,12 +209,14 @@ class MSICProfile(PlotCreation):
         except ValueError:
             pass
 
-    def update_entry_from_slider(self, slider_val):                    
+    def update_entry_from_slider(self, slider_val):    
+        """Updates entry value based on slider value."""                
         entry_val = slider_val * 2
         
         self.width_var.set(f"{entry_val:.2f}")
         
     def show_interactive_view(self, fig):
+        """Packs components for interactive view."""
         if self.custom_toolbar != None:
             self.custom_toolbar.pack_forget()
             self.custom_toolbar.destroy()
@@ -269,6 +272,7 @@ class MSICProfile(PlotCreation):
         self.tooltip.place(x=x, y=y) 
             
     def update_base_bar(self, base_string, pos):
+        """Updates base bar showing a part of the sequence where the cursor currently hovers."""
         self.base_bar.configure(state="normal")
         self.base_bar.delete("1.0", "end")
 

@@ -66,6 +66,7 @@ class NavigationToolbarController:
         figure.savefig(output_path, dpi=200)
         
     def reset_view(self):    
+        """Resets the zoom and pan to the original view."""
         file_list = self.view.master.controller.file_list
         csv_index = self.view.master.controller.csv_index
         
@@ -77,6 +78,7 @@ class NavigationToolbarController:
         self.view.master.canvas.draw_idle()
         
     def reset_config(self):
+        """Resets the subplot parameters to their original values."""
         file_list = self.view.master.controller.file_list
         csv_index = self.view.master.controller.csv_index
                 

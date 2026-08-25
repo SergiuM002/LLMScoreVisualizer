@@ -31,7 +31,8 @@ class PlotCreationController(ABC):
         self.main_ctrl.root.wm_geometry(f"+{x}+{y}")
         self.main_ctrl.apply_window_size()
         
-    def save_all_plots(self, view, output_path):        
+    def save_all_plots(self, view, output_path):       
+        """Saves plots of all imported CSVs.""" 
         for csv_path in self.file_list:
             with open(csv_path, "r") as csv_file:
                 df = pd.read_csv(csv_file)
@@ -50,6 +51,7 @@ class PlotCreationController(ABC):
             figure.savefig(f"{output_path}/{file_name}_MSICProfile{view.extension_selection.get()}", dpi=200)
             
     def resize_plot(self):
+        """Resizes plot based on monitor resolution."""
         if self.fig :
             self.fig.set_dpi(100 * self.main_ctrl.height_quo)
             

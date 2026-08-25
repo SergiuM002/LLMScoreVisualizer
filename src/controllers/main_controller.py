@@ -62,6 +62,7 @@ class MainController:
         self.root.mainloop()
         
     def get_current_monitor(self):
+        """Returns the monitor the app is on."""
         self.root.update_idletasks()
         parts = self.root.wm_geometry().split("+")
         win_x, win_y = int(parts[1]), int(parts[2])
@@ -79,8 +80,8 @@ class MainController:
         ctk.set_widget_scaling(self.height_quo)
         self.root.update()   
         
-    # Resize window based on monitor resolution
     def resize_window(self, window, current_monitor):
+        """Resize window based on monitor resolution."""
         last_monitor = current_monitor
         
         new_monitor = self.get_current_monitor()
@@ -97,34 +98,10 @@ class MainController:
             if self.plot_creation_view is not None and self.plot_creation_ctrl.fig is not None:
                 self.plot_creation_view.controller.preview_plot()
         
-        self.root.after(100, self.resize_window, window, current_monitor)
-          
-    # Forces each widget to repaint itself (solves visual bugs)
-    def force_coordinate_update(self, widget):
-        for child in widget.winfo_children():
-            if hasattr(child, "_draw"):
-                child._draw()
-
-            child.update() 
-            
-            if child.winfo_children():
-                self.force_coordinate_update(child)   
-             
-    # Scroll logic
-    def window_scroll(self, event, frame, dist):
-        current_pos = frame._parent_canvas.yview()[0]
-        step = 0.02
+        self.root.after(100, self.resize_window, window, current_monitor)     
         
-        if dist > 0:
-            new_pos = current_pos + step
-        else:
-            new_pos = current_pos - step
-        
-        frame._parent_canvas.yview_moveto(max(new_pos, 0))
-        return "break"      
-        
-    # Changes view to plot selection screen
     def show_plot_selection_screen(self):
+        """Changes view to plot selection screen."""
         self.root.withdraw()
         
         if self.plot_creation_view is not None:
@@ -133,11 +110,6 @@ class MainController:
             self.plot_creation_view = None
             self.plot_creation_ctrl = None
         
-        if env.OPERATING_SYSTEM == "Linux":
-            self.root.unbind_all("<Button-4>")   
-            self.root.unbind_all("<Button-5>")
-            self.root.bind_all("<Button-4>", lambda e:  self.window_scroll(e, self.plot_selection_view.scroll_frame, -1))          
-            self.root.bind_all("<Button-5>", lambda e:  self.window_scroll(e, self.plot_selection_view.scroll_frame, 1))     
         
         self.current_window_width = self.original_window_width
         self.current_window_height = self.original_window_height
@@ -147,8 +119,8 @@ class MainController:
         self.plot_selection_view.tkraise()
         self.root.deiconify()
         
-    # Changes view to plot creation screen
     def show_plot_creation_screen(self, selection):
+        """Changes view to plot creation screen."""
         self.root.withdraw()
         
         if env.OPERATING_SYSTEM == "Linux":
@@ -167,8 +139,8 @@ class MainController:
         
         self.root.deiconify()
         
-    # Cleanup on closing the program
     def on_closing(self):
+        """Cleanup on closing the program."""
         self.root.destroy()
         
         try:

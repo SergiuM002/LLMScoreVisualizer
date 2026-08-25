@@ -15,6 +15,7 @@ class PlotSelectionController:
         return descendants
         
     def apply_bindings(self, view):
+        """Applies bindings to all frames so they act like buttons."""
         for plot_button in view.plot_buttons:
             all_widgets = [plot_button] + self._get_all_children(plot_button)
             

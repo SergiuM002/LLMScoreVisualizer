@@ -16,8 +16,6 @@ class ImageFrame(ctk.CTkFrame):
         self.image_label = ctk.CTkLabel(self, text="", image=self.ctk_image)
         self.image_label.pack(expand=True)
         
-        #self.bind("<Configure>", self._resize_image)
-        
     def _resize_image(self, event):
         if event.width <= 10 or event.height <= 10:
             return

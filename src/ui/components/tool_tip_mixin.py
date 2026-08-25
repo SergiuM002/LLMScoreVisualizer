@@ -1,7 +1,9 @@
 import customtkinter as ctk
 
 class ToolTipMixin():
+    """Mixin logic for tooltips."""
     def setup_tooltip(self, message: str, delay_ms: int = 0):
+        """Binds the tooltip function with the selected delay."""
         self.message = message
         self.delay_ms = delay_ms
         self.tooltip = None
@@ -11,6 +13,7 @@ class ToolTipMixin():
         self.bind("<Leave>", self.hide_tooltip, add="+")
 
     def show_tooltip(self, event=None):
+        """Shows tooltip after specified delay."""
         if self._tooltip_timer is not None:
             self.after_cancel(self._tooltip_timer)
             self._tooltip_timer = None
@@ -51,7 +54,7 @@ class ToolTipMixin():
             if self.tooltip:
                 is_on_tooltip = (hovered == self.tooltip or str(hovered).startswith(str(self.tooltip) + "."))
 
-            # Ignore false <Leave> events if the mouse is still on self or internal children
+            # Ignore false <Leave> events if the mouse is still on self, internal children or the tooltip itself
             if hovered and not is_on_tooltip and (hovered == self or (str(hovered).startswith(str(self) + "."))):
                 return
             
