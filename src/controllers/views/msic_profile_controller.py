@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from Bio import SeqIO
-from Bio.SeqFeature import CompoundLocation
+from Bio.SeqFeature import CompoundLocation, AfterPosition, BeforePosition
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
@@ -76,18 +76,23 @@ class MSICProfileController(PlotCreationController):
             "priority": 0
         })
         
+        # Save gene limits
+        gene_limits = []
+                        
         feature_priority = {
             "CDS": 5,
             "5'UTR": 4,
             "3'UTR": 4,
             "exon": 3,
-            "intron": 2
+            "mRNA": 3,
+            "intron": 2,
+            "gene": 1
         }
-
+        
         # Assign rows to their respective region based on the GenBank features
         for feature in gbk_record.features:
             ftype = feature.type
-            if ftype not in ["CDS", "5'UTR", "3'UTR", "exon", "intron"]:
+            if ftype not in ["CDS", "5'UTR", "3'UTR", "exon", "mRNA", "intron", "gene"]:
                 continue
 
             for start_local, end_local in self._extract_ranges(feature):
@@ -96,7 +101,13 @@ class MSICProfileController(PlotCreationController):
 
                 lower_limit = min(region_start, region_end)
                 upper_limit = max(region_start, region_end)
-
+                
+                if feature.type == "gene":
+                    if not isinstance(feature.location.start, BeforePosition):
+                        gene_limits.append(lower_limit)
+                    if not isinstance(feature.location.end, AfterPosition):
+                        gene_limits.append(upper_limit)
+                    
                 mask = ann["position_region"].between(lower_limit, upper_limit)
 
                 # Only overwrite the region type if the new feature type has higher priority
@@ -106,7 +117,7 @@ class MSICProfileController(PlotCreationController):
                 ann.loc[overwrite, "priority"] = priority
 
         # Simplify the UTR region description
-        mapping = {"5'UTR": "UTR", "3'UTR": "UTR", "exon": "UTR"}
+        mapping = {"5'UTR": "UTR", "3'UTR": "UTR", "exon": "UTR", "mRNA": "UTR", "gene": "intron"}
         ann["region_type_simple"] = ann["region_type"].replace(mapping)
         
         # Merge annotation to the sequence DataFrame
@@ -130,12 +141,16 @@ class MSICProfileController(PlotCreationController):
             "intron": "lightblue"
         }
         
-        return plot_df, region_colors
+        return plot_df, gene_limits, region_colors
     
-    def apply_annotation(self, ax, plot_df, region_colors, legend_elements):
+    def apply_annotation(self, ax, plot_df, gene_limits, region_colors, legend_elements):
         """Colors the regions based on the annotation."""
         start_idx = 0
         current_region = plot_df.iloc[0]["region_type_simple"]
+        
+        has_cds = False
+        has_utr = False
+        has_intron = False
         
         # Color previous region upon region change
         for i in range(1, len(plot_df)):
@@ -144,6 +159,13 @@ class MSICProfileController(PlotCreationController):
                 x0 = plot_df.iloc[start_idx]["position_region"]
                 x1 = plot_df.iloc[i]["position_region"]
                 if current_region in region_colors:
+                    match current_region:
+                        case "CDS":
+                            has_cds = True
+                        case "UTR":
+                            has_utr = True
+                        case "intron":
+                            has_intron = True
                     ax.axvspan(x0, x1, color=region_colors[current_region], alpha=0.22)
                 start_idx = i
                 current_region = region_i
@@ -152,13 +174,27 @@ class MSICProfileController(PlotCreationController):
         x0 = plot_df.iloc[start_idx]["position_region"]
         x1 = plot_df.iloc[-1]["position_region"]
         if current_region in region_colors:
+            match region_colors:
+                case "CDS":
+                    has_cds = True
+                case "UTR":
+                    has_utr = True
+                case "intron":
+                    has_intron = True
             ax.axvspan(x0, x1, color=region_colors[current_region], alpha=0.22)
             
-        legend_elements.extend([
-            Patch(facecolor="lightgreen", edgecolor="none", alpha=0.22, label="CDS"),
-            Patch(facecolor="gold", edgecolor="none", alpha=0.22, label="UTR"),
-            Patch(facecolor="lightblue", edgecolor="none", alpha=0.22, label="intron"),
-        ])   
+        if gene_limits:
+            for limit in gene_limits:
+                ax.axvline(x=limit, color="orange", alpha=0.5)
+
+        if has_cds:
+            legend_elements.append(Patch(facecolor="lightgreen", edgecolor="none", alpha=0.22, label="CDS"))
+        if has_utr:
+            legend_elements.append(Patch(facecolor="gold", edgecolor="none", alpha=0.22, label="UTR"))   
+        if has_intron:
+            legend_elements.append(Patch(facecolor="lightblue", edgecolor="none", alpha=0.22, label="intron"))
+        if gene_limits:
+            legend_elements.append(Line2D([0], [0], marker="|", linestyle="None", color="orange", markersize=18, markeredgewidth=1.5, label="gene border")) 
         
     def get_plot(self, df, csv_path, genbank_file=None):
         """Returns the ax and figure of the desired plot."""
@@ -177,7 +213,7 @@ class MSICProfileController(PlotCreationController):
                 elif not gbk_record.features:
                     self.view.show_no_features_error(Path(genbank_file).name)
                 else:
-                    plot_df, region_colors = self.extract_annotation_positions(gbk_record=gbk_record, seq=seq, df=df, csv_file= csv_path, genbank_file=genbank_file)
+                    plot_df, gene_limits, region_colors = self.extract_annotation_positions(gbk_record=gbk_record, seq=seq, df=df, csv_file= csv_path, genbank_file=genbank_file)
                     if plot_df is not None:
                         has_annotation = True
             except ValueError:
@@ -194,15 +230,15 @@ class MSICProfileController(PlotCreationController):
         ax.axhline(y=0, color="blue", linewidth=0.5)
         
         legend_elements = [
-                Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markersize=6, alpha=0.5, label="-0.5 < MSIC < 0.5"),
-                Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=6, alpha=0.8, label="MSIC >= 0.5"),
-                Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=6, alpha=0.8, label="MSIC <= -0.5"),
-                Line2D([0], [0], color='black', lw=1.5, label="rolling mean"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markersize=6, alpha=0.5, label="-0.5 < MSIC < 0.5"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="green", markersize=6, alpha=0.8, label="MSIC >= 0.5"),
+            Line2D([0], [0], marker="o", color="w", markerfacecolor="red", markersize=6, alpha=0.8, label="MSIC <= -0.5"),
+            Line2D([0], [0], color="black", lw=1.5, label="rolling mean"),
         ]
         
         # Apply annotation if GenBank was present and valid
         if has_annotation:
-            self.apply_annotation(ax=ax, plot_df=plot_df, region_colors=region_colors, legend_elements=legend_elements)
+            self.apply_annotation(ax=ax, plot_df=plot_df, gene_limits=gene_limits, region_colors=region_colors, legend_elements=legend_elements)
             
         bbox_parameters = (0.5, 0.12) if has_annotation else (0.5, 0.08)
         
