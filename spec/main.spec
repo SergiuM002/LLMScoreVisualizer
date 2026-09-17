@@ -1,15 +1,26 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
+from PyInstaller.utils.hooks import collect_all
+
+# Collect all Matplotlib dynamic backends, drivers, and font assets
+datas, binaries, hiddenimports = collect_all('matplotlib')
 
 project_root = os.path.abspath(os.path.join(SPECPATH, '..'))
 src_dir = os.path.abspath(os.path.join(SPECPATH, '../src'))
+
+hiddenimports += [
+    'PIL._tkinter_finder',
+    'matplotlib.backends.backend_pdf',
+    'matplotlib.backends.backend_svg',
+    'matplotlib.backends.backend_agg',
+]
 
 a = Analysis(
     ['../src/main.py'],
     pathex=[project_root, src_dir],
     binaries=[],
     datas=[('../src/images', 'src/images')],
-    hiddenimports=['PIL._tkinter_finder'],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

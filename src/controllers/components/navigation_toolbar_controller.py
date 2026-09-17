@@ -1,7 +1,9 @@
 from pathlib import Path
 
+
 class NavigationToolbarController:   
     def __init__(self, main_ctrl, toolbar, **kwargs):   
+        self.main_ctrl = main_ctrl
         self.toolbar = toolbar
         self.pan_active = False
         self.zoom_active = False
@@ -58,12 +60,19 @@ class NavigationToolbarController:
             self.view.set_color_activated(self.view.pan_button, False)
             
     def save_plot(self, output_path):
+        if not output_path:
+            return
+        
         file_extension = Path(output_path).suffix.lower()
         if not file_extension:
             output_path = f"{output_path}.pdf"
-        
+            
         figure = self.view.master.controller.fig
-        figure.savefig(output_path, dpi=200)
+        
+        try:
+            figure.savefig(output_path, dpi=200)
+        except Exception as e:
+            self.view.show_plot_not_saved_error(e)
         
     def reset_view(self):    
         """Resets the zoom and pan to the original view."""

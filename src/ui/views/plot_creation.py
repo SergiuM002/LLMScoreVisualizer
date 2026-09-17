@@ -4,6 +4,7 @@ from customtkinter import filedialog
 from config.styles import Theme
 from CTkMessagebox import CTkMessagebox
 from ui.views.csv_import_menu import CSVImportMenu
+from ui.error_popup import ErrorPopup
 from controllers.views.csv_import_menu_controller import CSVImportMenuController
 import config.environment as env
 
@@ -121,10 +122,11 @@ class PlotCreation(ctk.CTkFrame):
             except subprocess.CalledProcessError:
                 return None
         else:
-            output_path = filedialog.askdirectory(title="Select a Path") 
+            output_path = filedialog.askdirectory(parent=self, title="Select a Path") 
             
         self.controller.save_all_plots(self, output_path)
         
-   
-        
+    def show_plot_not_saved_error(self, e):
+        scaling = self.main_ctrl.height_quo
+        ErrorPopup(self.main_ctrl.root, scaling, f"Plot could not be saved: {e}") 
     

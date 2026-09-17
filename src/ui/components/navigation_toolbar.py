@@ -5,6 +5,7 @@ import config.environment as env
 import subprocess
 from config.styles import Theme
 from ui.components.tooltip_button import TooltipButton
+from ui.error_popup import ErrorPopup
 
 class NavigationToolbar(ctk.CTkFrame):   
     """Custom navigation toolbar for the plot view."""
@@ -210,6 +211,7 @@ class NavigationToolbar(ctk.CTkFrame):
                 return
         else:
             output_path = filedialog.asksaveasfilename(
+                parent=self,
                 title="Save Your Plot",
                 defaultextension=".pdf",
                 filetypes=[
@@ -238,3 +240,7 @@ class NavigationToolbar(ctk.CTkFrame):
                 text_color=Theme.GRAY_BUTTON_TEXT,
                 hover_color=Theme.GRAY_BUTTON_HOVER,  
             )
+            
+    def show_plot_not_saved_error(self, e):
+        scaling = self.main_ctrl.height_quo
+        ErrorPopup(self.main_ctrl.root, scaling, f"Plot could not be saved: {e}") 

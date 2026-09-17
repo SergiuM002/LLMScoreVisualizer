@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 from abc import ABC, abstractmethod
 
+
 class PlotCreationController(ABC):
     def __init__(self, main_ctrl):
         self.main_ctrl = main_ctrl
@@ -33,6 +34,9 @@ class PlotCreationController(ABC):
         
     def save_all_plots(self, view, output_path):       
         """Saves plots of all imported CSVs.""" 
+        if not output_path:
+            return
+        
         for csv_path in self.file_list:
             with open(csv_path, "r") as csv_file:
                 df = pd.read_csv(csv_file)
@@ -48,7 +52,11 @@ class PlotCreationController(ABC):
                 
             file_name =  Path(csv_path).stem
             
-            figure.savefig(f"{output_path}/{file_name}_MSICProfile{view.extension_selection.get()}", dpi=200)
+            try:
+                figure.savefig(f"{output_path}/{file_name}_MSICProfile{view.extension_selection.get()}", dpi=200)
+            except Exception as e:
+                self.view.show_plot_not_saved_error(e)
+                
             
     def resize_plot(self):
         """Resizes plot based on monitor resolution."""
