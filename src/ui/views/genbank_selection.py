@@ -22,10 +22,8 @@ class GenbankSelection(ctk.CTkToplevel):
         self.title("Genbank Selection")
         self.withdraw()
         
-        win_width = round(600)
-        win_height = round(490)
+        controller.set_window_size_and_pos()
         
-        self.geometry(f"{win_width}x{win_height}+{round(master.controller.center_x-win_width/2)}+{round(master.controller.center_y-win_height/2)}")
         self.resizable(False, False)
         
         self.select_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -116,7 +114,8 @@ class GenbankSelection(ctk.CTkToplevel):
         controller.load_imported_csvs()
         controller.csvs_set_disabled_all()
         controller.load_imported_genbanks()
-        
+
+        self.transient(master)
         self.deiconify()
         
         self.protocol("WM_DELETE_WINDOW", self.on_close)

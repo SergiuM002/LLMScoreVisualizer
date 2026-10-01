@@ -1,8 +1,5 @@
-import platform
-import os
-import json
+import ctypes
 import customtkinter as ctk
-from tkinter import font as tkfont
 from screeninfo import get_monitors
 from ui.views.plot_selection import PlotSelection
 from controllers.views.plot_selection_controller import PlotSelectionController 
@@ -13,6 +10,8 @@ from config.fonts import Fonts
 
 class MainController:
     def __init__(self):
+        ctk.deactivate_automatic_dpi_awareness()
+
         self.root = ctk.CTk()
         self.root.withdraw()
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -77,8 +76,8 @@ class MainController:
     
     def apply_window_size(self):
         self.root.geometry(f"{round(self.current_window_width*self.height_quo)}x{round(self.current_window_height*self.height_quo)}")
-        ctk.set_widget_scaling(self.height_quo)
-        self.root.update()   
+        ctk.set_widget_scaling(self.height_quo)   
+        
         
     def resize_window(self, window, current_monitor):
         """Resize window based on monitor resolution."""
@@ -91,13 +90,13 @@ class MainController:
                 
         if (current_monitor != last_monitor):
             self.height_quo = current_monitor.height / 1200
-            
+
             self.apply_window_size()
             self.fonts.resize_text(self.height_quo)
             
             if self.plot_creation_view is not None and self.plot_creation_ctrl.fig is not None:
-                self.plot_creation_view.controller.preview_plot()
-        
+                self.root.after(0, self.plot_creation_view.controller.preview_plot)
+
         self.root.after(100, self.resize_window, window, current_monitor)     
         
     def show_plot_selection_screen(self):

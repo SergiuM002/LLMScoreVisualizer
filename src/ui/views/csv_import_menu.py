@@ -79,9 +79,9 @@ class CSVImportMenu(ctk.CTkToplevel):
         self.confirm_button.pack(side=ctk.BOTTOM, pady=(15))
         
         controller.load_imported_files()
-        
+
+        self.transient(master)
         self.deiconify()
-        
         self.protocol("WM_DELETE_WINDOW", self.on_close)
         
     def pack_csv_button(self, file_name, file_path, info):
@@ -111,7 +111,7 @@ class CSVImportMenu(ctk.CTkToplevel):
             except subprocess.CalledProcessError:
                 return
         else:
-            file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("GenBank files", "*.gb *.gbk")])
+            file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("CSV files", "*.csv")])
             
         if file_path:
             self.controller.add_csv(file_path)

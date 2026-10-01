@@ -15,6 +15,20 @@ class GenbankSelectionController:
         
     def connect_view(self, view):
         self.view = view
+
+    def set_window_size_and_pos(self):
+            monitor = self.main_ctrl.get_current_monitor()
+    
+            window_width = round(600*self.main_ctrl.height_quo)
+            window_height = round(490*self.main_ctrl.height_quo)
+            
+            self.center_x = round(monitor.width/2) + monitor.x
+            self.center_y = round(monitor.height/2) + monitor.y
+            
+            x = round(self.center_x - window_width/2)
+            y = round(self.center_y - window_height/2)
+            
+            self.view.wm_geometry(f"{window_width}x{window_height}+{x}+{y}")
         
     def load_imported_genbanks(self):
         for key in self.view.master.controller.genbank_links.keys():
