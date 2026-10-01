@@ -16,6 +16,7 @@ class NavigationToolbar(ctk.CTkFrame):
         self.master = master
         
         controller.connect_view(self)
+        #controller.load_fontawesome()
         
         self.prev_view_button = TooltipButton(
             self,
@@ -66,7 +67,7 @@ class NavigationToolbar(ctk.CTkFrame):
             self,
             height=30,
             width=30,
-            text="\uf047",
+            text="\uf047" if env.OPERATING_SYSTEM != "Windows" else "\uf0b2",
             font=("FontAwesome", 20),
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,

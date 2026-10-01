@@ -1,4 +1,5 @@
 import pandas as pd
+import config.environment as env
 from pathlib import Path
 from abc import ABC, abstractmethod
 
@@ -16,9 +17,15 @@ class PlotCreationController(ABC):
         
     def set_window_size(self):
         monitor = self.main_ctrl.get_current_monitor()
+
+        # Deals with scaling bs between operating systems
+        if env.OPERATING_SYSTEM == "Windows":
+            factor = 1
+        else:
+            factor = self.main_ctrl.height_quo
         
-        window_width = round(1400*self.main_ctrl.height_quo)
-        window_height = round(850*self.main_ctrl.height_quo)  
+        window_width = round(1400*factor)
+        window_height = round(850*factor)  
 
         self.center_x = round(monitor.width/2) + monitor.x
         self.center_y = round(monitor.height/2) + monitor.y

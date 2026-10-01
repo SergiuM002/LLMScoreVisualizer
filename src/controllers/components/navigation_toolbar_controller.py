@@ -1,4 +1,7 @@
 from pathlib import Path
+import ctypes
+import os
+import config.environment as env
 
 
 class NavigationToolbarController:   
@@ -97,3 +100,9 @@ class NavigationToolbarController:
         
         self.view.master.canvas.draw_idle()
 
+    def load_fontawesome(self):
+        if env.OPERATING_SYSTEM == "Windows":
+            path_buffer = ctypes.create_unicode_buffer(os.path.abspath("fonts/FontAwesome.otf"))
+            result = ctypes.windll.gdi32.AddFontResourceW(path_buffer)
+            if result > 0:
+                ctypes.windll.user32.SendMessageW(0xFFFF, 0x001D, 0, 0)

@@ -1,4 +1,5 @@
 from pathlib import Path
+import config.environment as env
 import csv
 
 class CSVImportMenuController:
@@ -17,9 +18,14 @@ class CSVImportMenuController:
         
     def set_window_size_and_pos(self):
         monitor = self.main_ctrl.get_current_monitor()
-                
-        window_width = round(300*self.main_ctrl.height_quo)
-        window_height = round(400*self.main_ctrl.height_quo)  
+
+        if env.OPERATING_SYSTEM == "Windows":
+            factor = self.main_ctrl.scale_factor
+        else:
+            factor = 1
+
+        window_width = round(300*self.main_ctrl.height_quo*factor)
+        window_height = round(400*self.main_ctrl.height_quo*factor)  
 
         self.center_x = round(monitor.width/2) + monitor.x
         self.center_y = round(monitor.height/2) + monitor.y

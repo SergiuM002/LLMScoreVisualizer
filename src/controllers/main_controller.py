@@ -1,8 +1,5 @@
-import platform
-import os
-import json
+import ctypes
 import customtkinter as ctk
-from tkinter import font as tkfont
 from screeninfo import get_monitors
 from ui.views.plot_selection import PlotSelection
 from controllers.views.plot_selection_controller import PlotSelectionController 
@@ -13,6 +10,11 @@ from config.fonts import Fonts
 
 class MainController:
     def __init__(self):
+        if env.OPERATING_SYSTEM == "Windows":
+            self.scale_factor = self._get_windows_dpi_scale()
+        else:
+            self.scale_factor = 1
+
         self.root = ctk.CTk()
         self.root.withdraw()
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -29,7 +31,7 @@ class MainController:
             if m.is_primary:
                 self.current_monitor = m
                 
-        self.height_quo = self.current_monitor.height/1200
+        self.height_quo = self.current_monitor.height/1200/self.scale_factor
         self.fonts = Fonts(self.height_quo)
 
         self.original_window_height = 800
@@ -47,7 +49,7 @@ class MainController:
         self.plot_creation_view = None
         self.plot_creation_ctrl = None
         
-        self.root.after(200, self.resize_window, self.root, self.current_monitor)
+        #self.root.after(200, self.resize_window, self.root, self.current_monitor)
         
         self.plot_selection_ctrl = PlotSelectionController(self)
         self.plot_selection_view = PlotSelection(self.plot_selection_ctrl, self.root)
@@ -138,6 +140,17 @@ class MainController:
         self.plot_creation_view.grid(row=0, column=0, sticky=ctk.NSEW)
         
         self.root.deiconify()
+
+    def _get_windows_dpi_scale(self):
+        try:
+            ctypes.windll.shcore.SetProcessDpiAwareness(2)
+        except Exception:
+            pass
+
+        dpi = ctypes.windll.user32.GetDpiForSystem()
+        scale_factor = dpi / 96.0
+
+        return scale_factor
         
     def on_closing(self):
         """Cleanup on closing the program."""
