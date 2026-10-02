@@ -49,7 +49,8 @@ class MainController:
         self.plot_creation_view = None
         self.plot_creation_ctrl = None
         
-        #self.root.after(200, self.resize_window, self.root, self.current_monitor)
+        if env.OPERATING_SYSTEM != "Windows":
+            self.root.after(200, self.resize_window, self.root, self.current_monitor)
         
         self.plot_selection_ctrl = PlotSelectionController(self)
         self.plot_selection_view = PlotSelection(self.plot_selection_ctrl, self.root)

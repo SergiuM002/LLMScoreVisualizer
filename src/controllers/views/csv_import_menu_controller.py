@@ -23,8 +23,8 @@ class CSVImportMenuController:
             window_width = 300
             window_height = 400
         else:
-            window_width = 300*self.main_ctrl.height_quo
-            window_height = 400*self.main_ctrl.height_quo
+            window_width = round(300*self.main_ctrl.height_quo)
+            window_height = round(400*self.main_ctrl.height_quo)
             
         self.center_x = round(monitor.width/2) + monitor.x
         self.center_y = round(monitor.height/2) + monitor.y
