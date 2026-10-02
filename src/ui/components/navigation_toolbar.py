@@ -6,6 +6,7 @@ import subprocess
 from config.styles import Theme
 from ui.components.tooltip_button import TooltipButton
 from ui.error_popup import ErrorPopup
+import tkinter.font as tkfont
 
 class NavigationToolbar(ctk.CTkFrame):   
     """Custom navigation toolbar for the plot view."""
@@ -16,19 +17,13 @@ class NavigationToolbar(ctk.CTkFrame):
         self.master = master
         
         controller.connect_view(self)
-        controller.load_fontawesome()
-
-        if env.OPERATING_SYSTEM == "Windows":
-            font = ("Font Awesome 5 Free Solid", 20)
-        else:
-            font = ("FontAwesome", 20)
         
         self.prev_view_button = TooltipButton(
             self,
             height=30,
             width=30,
             text="\uf0e2",
-            font=font,
+            font=controller.font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -43,7 +38,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf01e",
-            font=font,
+            font=controller.font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -58,7 +53,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf021",
-            font=font,
+            font=controller.font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -72,8 +67,8 @@ class NavigationToolbar(ctk.CTkFrame):
             self,
             height=30,
             width=30,
-            text="\uf047" if env.OPERATING_SYSTEM != "Windows" else "\uf0b2",
-            font=font,
+            text="\uf047" if env.OPERATING_SYSTEM == "Linux" else "\uf0b2",
+            font=controller.font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -88,7 +83,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf002",
-            font=font,
+            font=controller.font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -103,7 +98,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf013",
-            font=font,
+            font=controller.font,
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
@@ -117,7 +112,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf122",
-            font=font,
+            font=controller.font,
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
@@ -131,7 +126,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf0c7",
-            font=font,
+            font=controller.font,
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
