@@ -102,7 +102,12 @@ class NavigationToolbarController:
 
     def load_fontawesome(self):
         if env.OPERATING_SYSTEM == "Windows":
-            path_buffer = ctypes.create_unicode_buffer(os.path.abspath("fonts/FontAwesome.otf"))
-            result = ctypes.windll.gdi32.AddFontResourceW(path_buffer)
-            if result > 0:
-                ctypes.windll.user32.SendMessageW(0xFFFF, 0x001D, 0, 0)
+            path_buffer = ctypes.create_unicode_buffer(os.path.abspath("fonts/FontAwesome.ttf"))
+
+            # FR_PRIVATE = 0x10 (font is visible only to this process)
+            FR_PRIVATE = 0x10
+
+            ctypes.windll.gdi32.AddFontResourceExW(
+                path_buffer, FR_PRIVATE, 0
+            )
+

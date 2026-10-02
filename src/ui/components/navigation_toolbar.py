@@ -16,14 +16,19 @@ class NavigationToolbar(ctk.CTkFrame):
         self.master = master
         
         controller.connect_view(self)
-        #controller.load_fontawesome()
+        controller.load_fontawesome()
+
+        if env.OPERATING_SYSTEM == "Windows":
+            font = ("Font Awesome 5 Free Solid", 20)
+        else:
+            font = ("FontAwesome", 20)
         
         self.prev_view_button = TooltipButton(
             self,
             height=30,
             width=30,
             text="\uf0e2",
-            font=("FontAwesome", 20),
+            font=font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -38,7 +43,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf01e",
-            font=("FontAwesome", 20),
+            font=font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -53,7 +58,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf021",
-            font=("FontAwesome", 20),
+            font=font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -68,7 +73,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf047" if env.OPERATING_SYSTEM != "Windows" else "\uf0b2",
-            font=("FontAwesome", 20),
+            font=font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -83,7 +88,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf002",
-            font=("FontAwesome", 20),
+            font=font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
@@ -98,7 +103,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf013",
-            font=("FontAwesome", 20),
+            font=font,
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
@@ -112,7 +117,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf122",
-            font=("FontAwesome", 20),
+            font=font,
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
@@ -126,7 +131,7 @@ class NavigationToolbar(ctk.CTkFrame):
             height=30,
             width=30,
             text="\uf0c7",
-            font=("FontAwesome", 20),
+            font=font,
             fg_color=Theme.GRAY_BUTTON,
             text_color=Theme.GRAY_BUTTON_TEXT,
             hover_color=Theme.GRAY_BUTTON_HOVER,
