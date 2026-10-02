@@ -10,13 +10,10 @@ class NavigationToolbarController:
 		self.pan_active = False
 		self.zoom_active = False
 		self.font = None
+  
+		FontLoader.load_font("fonts/FontAwesome.ttf")
+		self.font = ("Font Awesome 5 Free", 20)
 
-		if env.OPERATING_SYSTEM != "Linux":
-			FontLoader.load_font("fonts/FontAwesome.ttf")
-			self.font = ("Font Awesome 5 Free", 20)
-		else:
-			self.font = ("FontAwesome", 20)
-		
 	def connect_view(self, view):
 		self.view = view
 		

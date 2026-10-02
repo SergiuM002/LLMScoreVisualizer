@@ -67,7 +67,7 @@ class NavigationToolbar(ctk.CTkFrame):
             self,
             height=30,
             width=30,
-            text="\uf047" if env.OPERATING_SYSTEM == "Linux" else "\uf0b2",
+            text="\uf0b2",
             font=controller.font,
             anchor="center",
             fg_color=Theme.GRAY_BUTTON,
