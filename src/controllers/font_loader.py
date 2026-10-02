@@ -4,16 +4,27 @@ import os
 import platform
 import tkinter.font as tkfont
 
+def get_resource_path(relative_path: str) -> str:
+        """Get absolute path to resource, handling PyInstaller runtime temp directory."""
+        if getattr(sys, "frozen", False):
+            # 1. PyInstaller --onefile mode uses _MEIPASS
+            if hasattr(sys, "_MEIPASS"):
+                return os.path.join(sys._MEIPASS, relative_path)
+            # 2. PyInstaller --onedir mode uses the executable's folder
+            return os.path.join(os.path.dirname(sys.executable), relative_path)
+
+        # 3. Development / source code mode
+        return os.path.abspath(relative_path)
 
 class FontLoader:
-
     @staticmethod
     def load_font(font_path: str) -> bool:
         """Loads a font dynamically for the current process/user session on
-
         Windows (GDI), macOS (CoreText), and Linux (Fontconfig).
         """
-        abs_path = os.path.abspath(font_path)
+        # Resolve the true path inside PyInstaller's runtime bundle
+        abs_path = get_resource_path(font_path)
+
         if not os.path.exists(abs_path):
             print(f"[FontLoader] Missing font file at: {abs_path}")
             return False
