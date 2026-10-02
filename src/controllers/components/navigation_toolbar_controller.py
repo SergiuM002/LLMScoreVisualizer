@@ -11,7 +11,7 @@ class NavigationToolbarController:
 		self.zoom_active = False
 		self.font = None
   
-		FontLoader.load_font("fonts/FontAwesome.ttf")
+		FontLoader.load_font(str(Path(env.FONT_DIR) / "FontAwesome.ttf"))
 		self.font = ("Font Awesome 5 Free", 20)
 
 	def connect_view(self, view):
