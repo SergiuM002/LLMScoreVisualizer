@@ -11,5 +11,5 @@ class Fonts:
         
 
     def resize_text(self, size_quo):
-        for i in range(1, 30):
+        for i in range(1, 35):
             self.roboto_fonts[i].configure(size=round(i*size_quo))

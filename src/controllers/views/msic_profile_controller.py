@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from controllers.views.plot_creation_controller import PlotCreationController
 from contextlib import contextmanager
 from pathlib import Path
+import config.environment as env
 
 class MSICProfileController(PlotCreationController):
     def __init__(self, main_ctrl):
@@ -403,10 +404,14 @@ class MSICProfileController(PlotCreationController):
         if event.inaxes == ax:
             x = self.view.winfo_pointerx() - self.view.winfo_rootx() + 15
             y = self.view.winfo_pointery() - self.view.winfo_rooty() + 10
-            
-            scaled_x = x / self.main_ctrl.height_quo
-            scaled_y = y / self.main_ctrl.height_quo
-            
+
+            if env.OPERATING_SYSTEM == "Windows":
+                scaled_x = x
+                scaled_y = y
+            else:
+                scaled_x = x / self.main_ctrl.height_quo
+                scaled_y = y / self.main_ctrl.height_quo
+                
             if round(event.xdata) < len(msic_scores) and 0 <= round(event.xdata):
                 msic = round(msic_scores[round(event.xdata)], 4)
             else:

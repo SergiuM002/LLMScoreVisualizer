@@ -254,7 +254,7 @@ class MSICProfile(PlotCreation):
             highlightthickness=0, 
             bg=text_bg, 
             fg=text_fg,
-            font=self.controller.main_ctrl.fonts.roboto_fonts[22]
+            font=self.controller.main_ctrl.fonts.roboto_fonts[round(22*self.controller.main_ctrl.scale_factor)]
         )
         self.base_bar.tag_configure("center_align", justify='center')
         self.base_bar.tag_configure("highlight", foreground="red")
