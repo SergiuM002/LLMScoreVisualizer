@@ -19,7 +19,7 @@ a = Analysis(
     ['../src/main.py'],
     pathex=[project_root, src_dir],
     binaries=[],
-    datas=[('../src/images', 'src/images')],
+    datas=[('../src/images', 'src/images'), ('../src/fonts', 'src/fonts')],
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
