@@ -6,7 +6,6 @@ import subprocess
 from config.styles import Theme
 from ui.components.tooltip_button import TooltipButton
 from ui.error_popup import ErrorPopup
-import tkinter.font as tkfont
 
 class NavigationToolbar(ctk.CTkFrame):   
     """Custom navigation toolbar for the plot view."""

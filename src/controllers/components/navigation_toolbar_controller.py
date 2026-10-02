@@ -1,6 +1,7 @@
 from pathlib import Path
 import config.environment as env
 from controllers.font_loader import FontLoader
+import tkinter.font as tkfont
 
 
 class NavigationToolbarController:   
@@ -10,9 +11,12 @@ class NavigationToolbarController:
 		self.pan_active = False
 		self.zoom_active = False
 		self.font = None
-  
+
 		FontLoader.load_font(str(Path(env.FONT_DIR) / "FontAwesome.ttf"))
-		self.font = ("Font Awesome 5 Free", 20)
+		if env.OPERATING_SYSTEM == "Windows":
+			self.font = ("Font Awesome 5 Free Solid", 20)
+		else:
+			self.font = ("Font Awesome 5 Free", 20)
 
 	def connect_view(self, view):
 		self.view = view
