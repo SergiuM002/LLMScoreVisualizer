@@ -35,7 +35,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='main',
+    name='LLMScoreVisualizer',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -54,5 +54,11 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='main',
+    name='LLMScoreVisualizer',
+)
+app = BUNDLE(
+    exe,
+    name='LLMScoreVisualizer.app',
+    icon=None,
+    bundle_identifier='com.sergiu.llmscorevisualizer',
 )
