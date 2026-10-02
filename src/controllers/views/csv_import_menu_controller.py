@@ -20,13 +20,12 @@ class CSVImportMenuController:
         monitor = self.main_ctrl.get_current_monitor()
 
         if env.OPERATING_SYSTEM == "Windows":
-            factor = self.main_ctrl.scale_factor
+            window_width = 300
+            window_height = 400
         else:
-            factor = 1
-
-        window_width = round(300*self.main_ctrl.height_quo*factor)
-        window_height = round(400*self.main_ctrl.height_quo*factor)  
-
+            window_width = 300*self.main_ctrl.height_quo
+            window_height = 400*self.main_ctrl.height_quo
+            
         self.center_x = round(monitor.width/2) + monitor.x
         self.center_y = round(monitor.height/2) + monitor.y
         

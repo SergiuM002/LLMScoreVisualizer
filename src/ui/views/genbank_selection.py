@@ -22,10 +22,16 @@ class GenbankSelection(ctk.CTkToplevel):
         self.title("Genbank Selection")
         self.withdraw()
         
-        win_width = round(600*self.controller.main_ctrl.height_quo)
-        win_height = round(490*self.controller.main_ctrl.height_quo)
+        win_width = 600
+        win_height = 490
+        if env.OPERATING_SYSTEM == "Windows":
+            scaled_win_width = round(win_width*self.controller.main_ctrl.height_quo)
+            scaled_win_height = round(win_height*self.controller.main_ctrl.height_quo)
+        else:
+            scaled_win_width = win_width
+            scaled_win_height = win_height
         
-        self.geometry(f"{win_width}x{win_height}+{round(master.controller.center_x-win_width/2)}+{round(master.controller.center_y-win_height/2)}")
+        self.geometry(f"{scaled_win_width}x{scaled_win_height}+{round(master.controller.center_x-win_width/2)}+{round(master.controller.center_y-win_height/2)}")
         self.resizable(False, False)
         
         self.select_frame = ctk.CTkFrame(self, fg_color="transparent")
