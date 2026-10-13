@@ -15,7 +15,7 @@ class MainController:
         self.root = ctk.CTk()
         self.root.withdraw()
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.root.title("LLMPipeLine")
+        self.root.title("LLMScoreVisualizer")
         self.root.resizable(False, False)
         self.root.rowconfigure(0, weight=1)
         self.root.columnconfigure(0, weight=1)
