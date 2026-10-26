@@ -13,6 +13,8 @@ hiddenimports += [
     'matplotlib.backends.backend_pdf',
     'matplotlib.backends.backend_svg',
     'matplotlib.backends.backend_agg',
+    'tkinter',
+    'customtkinter',
 ]
 
 a = Analysis(
