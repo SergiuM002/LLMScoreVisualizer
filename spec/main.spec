@@ -18,7 +18,7 @@ hiddenimports += [
 ]
 
 a = Analysis(
-    ['../src/main.py'],
+    ['../src/llmscorevisualizer/__main__.py'],
     pathex=[project_root, src_dir],
     binaries=[],
     datas=[('../src/images', 'src/images'), ('../src/fonts', 'src/fonts')],
