@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from ui.components.tool_tip_mixin import ToolTipMixin
+from llmscorevisualizer.ui.components.tool_tip_mixin import ToolTipMixin
 
 class TooltipButton(ctk.CTkButton, ToolTipMixin):
     """Button with tooltip."""

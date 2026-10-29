@@ -1,12 +1,12 @@
 import subprocess
 import customtkinter as ctk
 from customtkinter import filedialog
-from config.styles import Theme
+from llmscorevisualizer.config.styles import Theme
 from CTkMessagebox import CTkMessagebox
-from ui.views.csv_import_menu import CSVImportMenu
-from ui.error_popup import ErrorPopup
-from controllers.views.csv_import_menu_controller import CSVImportMenuController
-import config.environment as env
+from llmscorevisualizer.ui.views.csv_import_menu import CSVImportMenu
+from llmscorevisualizer.ui.error_popup import ErrorPopup
+from llmscorevisualizer.controllers.views.csv_import_menu_controller import CSVImportMenuController
+import llmscorevisualizer.config.environment as env
 
 class PlotCreation(ctk.CTkFrame):   
     def __init__(self, controller, master, **kwargs):   

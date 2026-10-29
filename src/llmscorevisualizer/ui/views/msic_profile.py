@@ -2,13 +2,13 @@ from matplotlib.widgets import Cursor
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import customtkinter as ctk
 import tkinter as tk
-from ui.views.plot_creation import PlotCreation
-from ui.views.genbank_selection import GenbankSelection
-from controllers.views.genbank_selection_controller import GenbankSelectionController
-from ui.components.navigation_toolbar import NavigationToolbar
-from controllers.components.navigation_toolbar_controller import NavigationToolbarController
-from ui.error_popup import ErrorPopup
-from config.styles import Theme
+from llmscorevisualizer.ui.views.plot_creation import PlotCreation
+from llmscorevisualizer.ui.views.genbank_selection import GenbankSelection
+from llmscorevisualizer.controllers.views.genbank_selection_controller import GenbankSelectionController
+from llmscorevisualizer.ui.components.navigation_toolbar import NavigationToolbar
+from llmscorevisualizer.controllers.components.navigation_toolbar_controller import NavigationToolbarController
+from llmscorevisualizer.ui.error_popup import ErrorPopup
+from llmscorevisualizer.config.styles import Theme
 
 class MSICProfile(PlotCreation):   
     def __init__(self, controller, master, **kwargs):   

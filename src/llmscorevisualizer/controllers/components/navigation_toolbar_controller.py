@@ -1,6 +1,6 @@
 from pathlib import Path
-import config.environment as env
-from controllers.font_loader import FontLoader
+import llmscorevisualizer.config.environment as env
+from llmscorevisualizer.controllers.font_loader import FontLoader
 import tkinter.font as tkfont
 
 

@@ -1,4 +1,4 @@
-from config.styles import Theme
+from llmscorevisualizer.config.styles import Theme
 from customtkinter import CTkLabel
 
 class PlotSelectionController:

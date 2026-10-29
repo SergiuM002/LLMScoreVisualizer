@@ -1,5 +1,5 @@
 from pathlib import Path
-import config.environment as env
+import llmscorevisualizer.config.environment as env
 import csv
 
 class CSVImportMenuController:

@@ -1,5 +1,5 @@
 from CTkMessagebox import CTkMessagebox
-from config.styles import Theme
+from llmscorevisualizer.config.styles import Theme
 
 class ErrorPopup(CTkMessagebox):
     def __init__(self, master, scaling, message):        

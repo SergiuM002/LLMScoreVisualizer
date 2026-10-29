@@ -1,6 +1,6 @@
 import customtkinter as ctk
-from config.styles import Theme
-from ui.components.info_icon import InfoIcon
+from llmscorevisualizer.config.styles import Theme
+from llmscorevisualizer.ui.components.info_icon import InfoIcon
 
 # The object the CSV and GenBank buttons use
 class FileButton(ctk.CTkButton):

@@ -1,11 +1,11 @@
 import customtkinter as ctk
 from pathlib import Path
 from customtkinter import filedialog
-import config.environment as env
+import llmscorevisualizer.config.environment as env
 import subprocess
-from config.styles import Theme
-from ui.components.tooltip_button import TooltipButton
-from ui.error_popup import ErrorPopup
+from llmscorevisualizer.config.styles import Theme
+from llmscorevisualizer.ui.components.tooltip_button import TooltipButton
+from llmscorevisualizer.ui.error_popup import ErrorPopup
 
 class NavigationToolbar(ctk.CTkFrame):   
     """Custom navigation toolbar for the plot view."""

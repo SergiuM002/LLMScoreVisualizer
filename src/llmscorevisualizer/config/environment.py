@@ -10,6 +10,6 @@ try:
 except AttributeError:
     BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-IMAGES_DIR = BASE_DIR / "src" / "images"
-FONT_DIR =BASE_DIR / "src" / "fonts"
+IMAGES_DIR = BASE_DIR / "llmscorevisualizer" / "images"
+FONT_DIR = BASE_DIR / "llmscorevisualizer" / "fonts"
 

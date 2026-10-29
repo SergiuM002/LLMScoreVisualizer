@@ -1,7 +1,7 @@
 import customtkinter as ctk
-from config.styles import Theme
-import config.environment as env
-from ui.components.image_frame import ImageFrame
+from llmscorevisualizer.config.styles import Theme
+import llmscorevisualizer.config.environment as env
+from llmscorevisualizer.ui.components.image_frame import ImageFrame
 
 class PlotSelection(ctk.CTkFrame):
     def __init__(self, controller, master, **kwargs):   

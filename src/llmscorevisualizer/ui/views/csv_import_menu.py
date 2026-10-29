@@ -1,11 +1,11 @@
 import customtkinter as ctk
 from customtkinter import filedialog
-from config.styles import Theme
-import config.environment as env
+from llmscorevisualizer.config.styles import Theme
+import llmscorevisualizer.config.environment as env
 import subprocess
 from CTkMessagebox import CTkMessagebox
-from ui.components.file_button import FileButton
-from ui.error_popup import ErrorPopup
+from llmscorevisualizer.ui.components.file_button import FileButton
+from llmscorevisualizer.ui.error_popup import ErrorPopup
 
 class CSVImportMenu(ctk.CTkToplevel):   
     def __init__(self, controller, master, *args, **kwargs):   

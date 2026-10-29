@@ -1,8 +1,8 @@
 import subprocess
 from pathlib import Path
-from config.styles import Theme
-from ui.components.info_icon import InfoIcon
-import config.environment as env
+from llmscorevisualizer.config.styles import Theme
+from llmscorevisualizer.ui.components.info_icon import InfoIcon
+import llmscorevisualizer.config.environment as env
 
 class GenbankSelectionController:
     def __init__(self, main_ctrl):

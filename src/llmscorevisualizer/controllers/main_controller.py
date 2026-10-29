@@ -1,12 +1,12 @@
 import ctypes
 import customtkinter as ctk
 from screeninfo import get_monitors
-from ui.views.plot_selection import PlotSelection
-from controllers.views.plot_selection_controller import PlotSelectionController 
-from controllers.views.msic_profile_controller import MSICProfileController
-from ui.views.msic_profile import MSICProfile
-import config.environment as env
-from config.fonts import Fonts
+from llmscorevisualizer.ui.views.plot_selection import PlotSelection
+from llmscorevisualizer.controllers.views.plot_selection_controller import PlotSelectionController 
+from llmscorevisualizer.controllers.views.msic_profile_controller import MSICProfileController
+from llmscorevisualizer.ui.views.msic_profile import MSICProfile
+import llmscorevisualizer.config.environment as env
+from llmscorevisualizer.config.fonts import Fonts
 
 class MainController:
     def __init__(self):

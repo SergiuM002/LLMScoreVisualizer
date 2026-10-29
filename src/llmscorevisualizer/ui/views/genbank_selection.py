@@ -1,10 +1,10 @@
 import customtkinter as ctk
 from customtkinter import filedialog
-from config.styles import Theme
-from ui.components.file_button import FileButton
+from llmscorevisualizer.config.styles import Theme
+from llmscorevisualizer.ui.components.file_button import FileButton
 from CTkMessagebox import CTkMessagebox
-from ui.error_popup import ErrorPopup
-import config.environment as env
+from llmscorevisualizer.ui.error_popup import ErrorPopup
+import llmscorevisualizer.config.environment as env
 import subprocess
 
 class GenbankSelection(ctk.CTkToplevel):   

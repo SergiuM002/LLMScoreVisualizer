@@ -1,5 +1,5 @@
 import pandas as pd
-import config.environment as env
+import llmscorevisualizer.config.environment as env
 from pathlib import Path
 from abc import ABC, abstractmethod
 

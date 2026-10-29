@@ -5,10 +5,10 @@ from Bio.SeqFeature import CompoundLocation, AfterPosition, BeforePosition
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
-from controllers.views.plot_creation_controller import PlotCreationController
+from llmscorevisualizer.controllers.views.plot_creation_controller import PlotCreationController
 from contextlib import contextmanager
 from pathlib import Path
-import config.environment as env
+import llmscorevisualizer.config.environment as env
 
 class MSICProfileController(PlotCreationController):
     def __init__(self, main_ctrl):
