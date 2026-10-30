@@ -60,10 +60,11 @@ coll = COLLECT(
     upx=True,
     upx_exclude=[],
     name='LLMScoreVisualizer',
+    icon='../icons/llmscorevisualizer.ico'
 )
 app = BUNDLE(
     exe,
     name='LLMScoreVisualizer.app',
-    icon=None,
+    icon='../icons/llmscorevisualizer.icns',
     bundle_identifier='com.sergiu.llmscorevisualizer',
 )
