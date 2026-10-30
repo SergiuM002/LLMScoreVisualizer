@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
+    name: Build on ${{ matrix.ubuntu_ver && format('{0}-{1}', matrix.platform, matrix.ubuntu_ver) || matrix.platform }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false # Keeps building other OS targets even if one fails
