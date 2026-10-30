@@ -6,7 +6,7 @@ from PyInstaller.utils.hooks import collect_all
 datas, binaries, hiddenimports = collect_all('matplotlib')
 
 project_root = os.path.abspath(os.path.join(SPECPATH, '..'))
-src_dir = os.path.abspath(os.path.join(SPECPATH, '../src'))
+src_dir = os.path.abspath(os.path.join(SPECPATH, '../src/llmscorevisualizer'))
 
 hiddenimports += [
     'PIL._tkinter_finder',
@@ -21,7 +21,10 @@ a = Analysis(
     ['../src/llmscorevisualizer/__main__.py'],
     pathex=[project_root, src_dir],
     binaries=[],
-    datas=[('../src/images', 'src/images'), ('../src/fonts', 'src/fonts')],
+    datas=[
+        ('../src/llmscorevisualizer/images', 'src/llmscorevisualizer/images'), 
+        ('../src/llmscorevisualizer/fonts', 'src/llmscorevisualizer/fonts')
+    ],
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
