@@ -52,5 +52,10 @@ requires = [
     "urllib3==2.7.0"
 ]
 
+[tool.briefcase.app.llmscorevisualizer.linux.system.debian]
+system_runtime_requires = [
+    "python3-tk",
+]
+
 [tool.briefcase.app.llmscorevisualizer.macOS]
 universal_build = false
