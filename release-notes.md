@@ -1,3 +1,1 @@
-# Changes
-
-Initial release.
+LLMScoreVisualizer 1.0.0 is the first release version. Any versions from here on out will have their changes recorded here.
