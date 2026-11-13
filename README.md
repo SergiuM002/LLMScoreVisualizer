@@ -3,20 +3,20 @@ A graphical user interface for plotting scores sourced from DNA language models 
 
 ## Quickstart
 
-### Cloning the repository
-Clone the repository to your system using `git clone <repository-link>`.
+### Download
+You can find the downloads on the [Release Page](https://github.com/SergiuM002/LLMScoreVisualizer/releases/latest).
+
+## Building
 
 ### Creating the environment
-Create the venv environment using `python -m venv .venv`, activate it and install the required packages from the requirements.txt with `pip install -r requirements.txt`.
+Create the venv environment in the project root using `python3 -m venv .venv` and activate it.
 
-### Use the GUI
-Now you can launch the GUI from "src/main.py" and import csv files with the scores to be plotted.
+### Building via Briefcase
+Install briefcase with `pip install briefcase` and package the project with `briefcase package`. The built package should be in "dist/".
 
-## Building the program
-If you want to not have to launch the script from within the environment in the terminal, follow these steps to create an executable.
+### Building via Pyinstaller
+Install the requirements with `pip install -r requirements.txt` and pyinstaller with `pip install pyinstaller`. Then, package the program with `pyinstaller spec/main.spec`. The executable should be in "dist/LLMScoreVisualizer/".
 
-### Installing Pyinstaller
-You will have to manually install the pyinstaller package using `pip install pyinstaller`, since it is not included in the requirements.
-
-### Using the spec files
-To build the GUI program, run `pyinstaller spec/main.spec`. The executable will be in "dist/main".
+## Usage
+Select a plot type, import the CSVs with the scores and use the various plot options to get your desired plot.
+You may also use the navigation toolbar below the plot the navigate within the plot itself.
